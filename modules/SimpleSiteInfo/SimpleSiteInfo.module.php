@@ -29,7 +29,7 @@ class SimpleSiteInfo extends CMSModule {
 
 	function GetName(){ return 'SimpleSiteInfo'; }
 	function GetFriendlyName(){ return $this->Lang('friendlyname'); }
-	function GetVersion(){ return '3.3'; }
+	function GetVersion(){ return '3.5.1'; }
 	function GetHelp() { return file_get_contents(dirname(__FILE__).'/help_text.inc'); }
 	function GetAuthor(){ return 'Noel McGran, Rolf Tjassens'; }
 	function GetAuthorEmail(){ return 'nmcgran@telus.net, info at cmscanbesimple dot org'; }

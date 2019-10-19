@@ -26,7 +26,7 @@
 		{/if}
 
 		{$my_alerts=$theme->get_my_alerts()}
-                {if ($my_alerts)}
+                {if $my_alerts}
 		{$num_alerts=$my_alerts}
 		{if $num_alerts > 0}
 		   {if $num_alerts > 10}{$txt='&#2295'}{else}{$num=1+$num_alerts}{$txt="{$num_alerts}"}{/if}
