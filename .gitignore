@@ -1,0 +1,7 @@
+/tmp
+/uploads/*
+/nbproject/*
+/.htaccess
+/config.php
+/index.php
+/doc/*.sql

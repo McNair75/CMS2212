@@ -1,0 +1,30 @@
+<?php
+$lang['all'] = 'Alla';
+$lang['desc_css_search'] = 'Sök efter matchande text i stylesheets';
+$lang['desc_content_search'] = 'Sök efter matchande text på innehållssidor';
+$lang['desc_filter_all'] = 'Byt alla filter';
+$lang['desc_oldmodtemplate_search'] = 'Sök efter gamla modulmallar';
+$lang['desc_template_search'] = 'Sök efter matchande text i mallar';
+$lang['error_nosearchtext'] = 'Vänligen ange ett sökord';
+$lang['error_select_slave'] = 'Du måste välja minst en filtertyp';
+$lang['filter'] = 'Filter';
+$lang['finished'] = 'Avslutad';
+$lang['friendlyname'] = 'Admin sökning';
+$lang['lbl_content_search'] = 'Sök innehållssidor';
+$lang['lbl_css_search'] = 'Sök stilmallar';
+$lang['lbl_gcb_search'] = 'Sök globala innehållsblock';
+$lang['lbl_oldmodtemplate_search'] = 'Sök modulmallar';
+$lang['lbl_search_desc'] = 'Sök beskrivningar <em> (om tillämpligt) </ em>';
+$lang['lbl_template_search'] = 'Sök mallar';
+$lang['moddescription'] = 'Ett verktyg för att söka i databasen för rader som innehåller viss text. Användbar för att hitta var vissa stilar, taggar eller moduler används.';
+$lang['placeholder_search_text'] = 'Ange söktext';
+$lang['postinstall'] = 'Admin sökmodul installerad';
+$lang['postuninstall'] = 'Admin sökmodul avinstallerad';
+$lang['search'] = 'Sök';
+$lang['search_text'] = 'Söktext';
+$lang['search_results'] = 'Sökresultat';
+$lang['sectiondesc_oldmodtemplates'] = 'Resultatet i det här avsnittet är inte klickbart, eftersom varje modul ger sitt eget gränssnitt för administratörspanelen när det gäller redigering av mallar';
+$lang['settings'] = 'Inställningar';
+$lang['starting'] = 'Startar';
+$lang['warn_clickthru'] = 'Detta öppnar ett annat fönster. Annullering från det här fönstret kan inte returnera dig till den här sidan. Ditt sökresultat kan gå vilse.';
+?>
