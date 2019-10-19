@@ -1097,6 +1097,8 @@ $lang['json_function'] = "JSON functions";
 
 ## L
 //$lang['langparam'] = "Parameter is used to specify what language to use for display on the frontend. Not all modules support or need this.";
+$lang['lise'] = "LISE Instances";
+$lang['lisedescription'] = "Allow system to install instances automatically";
 $lang['language'] = "Language";
 $lang['lang_settings_legend'] = "Language related settings";
 $lang['last'] = "Last";
@@ -1370,6 +1372,7 @@ $lang['perm_View_Tag_Help'] = 'View Tag Help';
 $lang['phpversion'] = "Current PHP Version";
 $lang['php_information'] = "PHP Information";
 $lang['php_opcache'] = 'PHP 5.5+ Opcode Cache';
+$lang['picture'] = "Picture";
 $lang['pluginabout'] = "About the %s tag";
 $lang['pluginhelp'] = "Help for the %s tag";
 $lang['pluginmanagement'] = "Plugin Management";

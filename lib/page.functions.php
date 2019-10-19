@@ -1,22 +1,4 @@
 <?php
-#CMS - CMS Made Simple
-#(c)2004 by Ted Kulp (wishy@users.sf.net)
-#Visit our homepage at: http://www.cmsmadesimple.org
-#
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
-#
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#$Id: page.functions.php 12152 2019-04-27 13:43:18Z calguy1000 $
 
 /**
  * Page related functions.  Generally these are functions not necessarily
@@ -25,7 +7,6 @@
  * @package CMS
  * @license GPL
  */
-
 
 /**
  * Gets the userid of the currently logged in user.
@@ -207,6 +188,63 @@ function audit($itemid, $itemname, $action)
     $db->Execute($query,array(time(),$userid,$username,$itemid,$itemname,$action,$ip_addr));
 }
 
+/**
+ * reset_ip
+ * @author Lipit
+ * @return void
+ */
+function reset_ip()
+{
+    $db = CmsApp::get_instance()->GetDb();
+    $query = 'DELETE FROM ' . CMS_DB_PREFIX . 'request_ips';
+    $result = $db->Execute($query);
+    if ($result) {
+        set_site_preference('sitedownexcludes', null);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * request_ip
+ * @author Lipit
+ * @return void
+ */
+function request_ip()
+{
+    $db = CmsApp::get_instance()->GetDb();
+    $ip_addr = cms_utils::get_real_ip();
+    $query = 'SELECT * FROM ' . CMS_DB_PREFIX . 'request_ips WHERE ip_addr = ?';
+    $result = $db->Execute($query, array($ip_addr));
+    $time = $db->DBTimeStamp(time());
+    if ($result && $result->RecordCount() < 1) {
+        $query1 = "INSERT INTO " . CMS_DB_PREFIX . "request_ips (timestamp, latitude, longitude, ip_addr) VALUES ($time,?,?,?)";
+        $db->Execute($query1, array('xxx', 'xxx', $ip_addr));
+        return true;
+    } else {
+        return false;
+        $query2 = "UPDATE " . CMS_DB_PREFIX . "request_ips SET timestamp = $time";
+        $db->Execute($query2);
+    }
+    return false;
+}
+
+/**
+ * remove_ip_accepted
+ * @author Lipit
+ * @return void
+ */
+function remove_ip_accepted()
+{
+    $db = CmsApp::get_instance()->GetDb();
+    $ip_addr = cms_utils::get_real_ip();
+    $query = 'DELETE FROM ' . CMS_DB_PREFIX . 'request_ips WHERE ip_addr = ?';
+    $result = $db->Execute($query, array($ip_addr));
+    if ($result) {
+        return true;
+    }
+    return false;
+}
 
 /**
  * Gets the given site prefernce
@@ -220,9 +258,8 @@ function audit($itemid, $itemname, $action)
  */
 function get_site_preference($prefname, $defaultvalue = '')
 {
-  return cms_siteprefs::get($prefname,$defaultvalue);
+    return cms_siteprefs::get($prefname, $defaultvalue);
 }
-
 
 /**
  * Removes the given site preference
@@ -233,11 +270,10 @@ function get_site_preference($prefname, $defaultvalue = '')
  * @param boolean $uselike Wether or not to remove all preferences that are LIKE the supplied name
  * @return void
  */
-function remove_site_preference($prefname,$uselike=false)
+function remove_site_preference($prefname, $uselike = false)
 {
-  return cms_siteprefs::remove($prefname,$uselike);
+    return cms_siteprefs::remove($prefname, $uselike);
 }
-
 
 /**
  * Sets the given site perference with the given value.
@@ -251,11 +287,8 @@ function remove_site_preference($prefname,$uselike=false)
  */
 function set_site_preference($prefname, $value)
 {
-  return cms_siteprefs::set($prefname,$value);
+    return cms_siteprefs::set($prefname, $value);
 }
-
-
-
 
 /**
  * A method to create a text area control

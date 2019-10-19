@@ -131,7 +131,7 @@ table {
 /* Container - Wrapping all grids inside,
  * use .cf class to clear floated elements
  */
-.c_full { width: 100% }
+.c_full { width: 100%; margin-bottom:5px !important; }
 
 /* Global Grid style, the actual grid */
 .grid_1,
@@ -1501,7 +1501,7 @@ div.pageoverflow {
 	clear: left;
 	padding-top: 1px;
 	width: auto;
-	overflow: hidden
+	/*overflow: hidden*/
 }
 div.pageoverflow img {
 	border: 0px
@@ -2296,7 +2296,7 @@ a.toggle-dropzone:focus {
 	}
 	header .cms-logo {
 		background: none;
-		width: 100%
+		/*width: 100%*/
 	}
 	header .shortcuts li {
 		padding: 0 5px;

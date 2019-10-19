@@ -460,7 +460,7 @@ EOT;
   {
     $this->use_hints = cms_utils::get_app_data( '__MODULE_HINT__' . $this->GetName() );
     
-    if(count($this->use_hints) > 0)
+    if($this->use_hints && count($this->use_hints) > 0)
     {
       foreach((array)$this->use_hints as $key=>$value)
       {
@@ -748,7 +748,7 @@ EOT;
   {
     $config = array();
     
-    if( count( func_num_args() ) )
+    if(func_num_args())
     {
       $key = func_get_arg(0);
       $config = \LISE\ConfigManager::GetConfigInstance($this);

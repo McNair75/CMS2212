@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,29 +54,27 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-if( !defined('CMS_VERSION') ) exit;
+if (!defined('CMS_VERSION'))
+    exit;
 #---------------------
 # Check params
 #---------------------
-if (isset($params['cancel'])) 
-{
-  $params = array('active_tab' => 'instancestab');
-  $this->Redirect($id, 'defaultadmin', $returnid, $params);
+if (isset($params['cancel'])) {
+    $params = array('active_tab' => 'instancestab');
+    $this->Redirect($id, 'defaultadmin', $returnid, $params);
 }
 
 $autoinstall = $this->GetPreference('allow_autoinstall', 0);
 $module_name = '';
 
-if(isset($params['module_name'])) 
-{
-  $module_name = $params['module_name'];
+if (isset($params['module_name'])) {
+    $module_name = $params['module_name'];
 }
 
-$module_friendlyname = $module_name; 
+$module_friendlyname = $module_name;
 
-if( !empty($params['module_friendlyname']) ) 
-{
-	$module_friendlyname = $params['module_friendlyname'];
+if (!empty($params['module_friendlyname'])) {
+    $module_friendlyname = $params['module_friendlyname'];
 }
 
 $invalid_names = array('lise', 'original', 'xdefs', 'loader');
@@ -83,76 +82,69 @@ $modules = $this->ListModules();
 
 // module admin section options
 $admin_sections = array(
-                          lang('main')        => 'main',
-                          lang('content')     => 'content',
-                          lang('layout')      => 'layout',
-                          lang('usersgroups') => 'usersgroups',
-                          lang('extensions')  => 'extensions',
-                          lang('siteadmin')   => 'siteadmin',
-                          lang('myprefs')     => 'myprefs',
-                          lang('ecommerce')   => 'ecommerce'
-                        );
+    lang('main') => 'main',
+    lang('content') => 'content',
+    lang('lise') => 'lise', //+Lee
+    lang('layout') => 'layout',
+    lang('usersgroups') => 'usersgroups',
+    lang('extensions') => 'extensions',
+    lang('siteadmin') => 'siteadmin',
+    lang('myprefs') => 'myprefs',
+    lang('ecommerce') => 'ecommerce'
+);
 
-foreach($modules as $mod) 
-{
-	$mod->module_name = substr($mod->module_name, strlen(LISEDuplicator::MOD_PREFIX));
-	$invalid_names[] = strtolower($mod->module_name);
+foreach ($modules as $mod) {
+    $mod->module_name = substr($mod->module_name, strlen(LISEDuplicator::MOD_PREFIX));
+    $invalid_names[] = strtolower($mod->module_name);
 }
 
 #---------------------
 # Submit
 #---------------------
-if (isset($params['submit'])) 
-{
-	$errors = array();
-	
-	if(empty($module_name)) 
-  {
-		$errors[] = $this->ModLang('module_name_empty');
-	}
-	
-	if(preg_match('/[^0-9a-zA-Z]/', $module_name)) 
-  {
-		$errors[] = $this->ModLang('module_name_invalid');
-	}
-	
-	if(in_array(strtolower($module_name), $invalid_names))
-  {
-		$errors[] = $this->ModLang('module_name_invalid');
-	}	
+if (isset($params['submit'])) {
+    $errors = array();
 
-	if (empty($errors))
-  {
-		$duplicator = new LISEDuplicator($module_name);
-		$module_fullname = $duplicator->Run();
-		
-		if($autoinstall) 
-    {
-			$modops = cmsms()->GetModuleOperations();
-			$modops->InstallModule($module_fullname);
-      $mod = cmsms()->GetModuleInstance($module_fullname);
-      $mod->SetPreference('friendlyname',         $module_friendlyname);
-      $mod->SetPreference('adminsection',         $params['adminsection']);
-      $mod->SetPreference('moddescription',       $params['moddescription']);
-		}
-		
-		$params = array('message' => 'modulecopied','active_tab' => 'instancestab');
-		$this->Redirect($id, 'defaultadmin', '', $params);  
-	}
+    if (empty($module_name)) {
+        $errors[] = $this->ModLang('module_name_empty');
+    }
+
+    if (preg_match('/[^0-9a-zA-Z]/', $module_name)) {
+        $errors[] = $this->ModLang('module_name_invalid');
+    }
+
+    if (in_array(strtolower($module_name), $invalid_names)) {
+        $errors[] = $this->ModLang('module_name_invalid');
+    }
+
+    if (empty($errors)) {
+        $duplicator = new LISEDuplicator($module_name);
+        $module_fullname = $duplicator->Run();
+
+        if ($autoinstall) {
+            $modops = cmsms()->GetModuleOperations();
+            $modops->InstallModule($module_fullname);
+            $mod = cmsms()->GetModuleInstance($module_fullname);
+            $mod->SetPreference('friendlyname', $module_friendlyname);
+            $mod->SetPreference('adminsection', $params['adminsection']);
+            $mod->SetPreference('moddescription', $params['moddescription']);
+        }
+
+        $params = array('message' => 'modulecopied', 'active_tab' => 'instancestab');
+        $this->Redirect($id, 'defaultadmin', '', $params);
+    }
 }
 
 #---------------------
 # Error handling
 #---------------------
-if (!empty($errors))
-{
-  echo $this->ShowErrors($errors);
+if (!empty($errors)) {
+    echo $this->ShowErrors($errors);
 }
 
 #---------------------
 # Smarty processing
 #---------------------
-$smarty->assign('startform', $this->CreateFormStart ($id, 'admin_copymodule', $returnid, 'post', 'multipart/form-data', false, '', $params));
+$smarty->assign('startform', $this->CreateFormStart($id, 'admin_copymodule', $returnid, 'post', 'multipart/form-data', false, '', $params));
 $smarty->assign('endform', $this->CreateFormEnd());
 
 $smarty->assign('input_module_name', $this->CreateInputText($id, 'module_name', $module_name, 40));
@@ -166,5 +158,4 @@ $smarty->assign('submit', $this->CreateInputSubmit($id, 'submit', lang('submit')
 $smarty->assign('cancel', $this->CreateInputSubmit($id, 'cancel', lang('cancel')));
 
 echo $this->ProcessTemplate('copymodule.tpl');
-
 ?>

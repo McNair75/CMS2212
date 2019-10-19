@@ -1,54 +1,52 @@
 <?php
-#-------------------------------------------------------------------------
-# OneEleven- An admin theme for CMS Made Simple
-# (c) 2012 by Author: Goran Ilic (ja@ich-mach-das.at) http://dev.cmsmadesimple.org/users/uniqu3
-#
-#-------------------------------------------------------------------------
-# CMS - CMS Made Simple is (c) 2005 by Ted Kulp (wishy@cmsmadesimple.org)
-# Visit our homepage at: http://www.cmsmadesimple.org
-#
-#-------------------------------------------------------------------------
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# However, as a special exception to the GPL, this software is distributed
-# as an addon module to CMS Made Simple.  You may not use this software
-# in any Non GPL version of CMS Made simple, or in any version of CMS
-# Made simple that does not indicate clearly and obviously in its admin
-# section that the site was built with CMS Made simple.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-# Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
-#
-#-------------------------------------------------------------------------
 
 $gCms = cmsms();
-$config = $gCms -> GetConfig();
-$smarty = $gCms -> GetSmarty();
+$config = $gCms->GetConfig();
+$smarty = $gCms->GetSmarty();
 
 debug_buffer('Debug in the page is: ' . $error);
 if (isset($error) && $error != '') {
-	$smarty -> assign('error', $error);
+    $smarty->assign('error', $error);
 } else if (isset($warningLogin) && $warningLogin != '') {
-	$smarty -> assign('warninglogin', $warningLogin);
+    $smarty->assign('warninglogin', $warningLogin);
 } else if (isset($acceptLogin) && $acceptLogin != '') {
-	$smarty -> assign('acceptlogin', $acceptLogin);
+    $smarty->assign('acceptlogin', $acceptLogin);
 }
 
 if ($changepwhash != '') {
-	$smarty -> assign('changepwhash', $changepwhash);
+    $smarty->assign('changepwhash', $changepwhash);
 }
 
-$smarty -> assign('encoding', get_encoding());
-$smarty -> assign('config', $gCms -> GetConfig());
+#Start::Images & Icon
+if (!empty($config['admin_path_url'])) {
+    $admin_path_url = cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'logoCMS.png');
+    $admin_icon_url = cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'cmsms-favicon.ico');
+    $admin_touch = [
+        cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'apple-touch-icon-iphone.png'),
+        cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'apple-touch-icon-ipad.png'),
+        cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'apple-touch-icon-iphone4.png'),
+        cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'apple-touch-icon-ipad3.png'),
+        cms_join_path($config['admin_url'], 'themes', '_src', $config['admin_path_url'], 'favicon', 'ms-application-icon.png')
+    ];
+} else {
+    $admin_path_url = cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'logoCMS.png');
+    $admin_icon_url = cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'cmsms-favicon.ico');
+    $admin_touch = [
+        cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'apple-touch-icon-iphone.png'),
+        cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'apple-touch-icon-ipad.png'),
+        cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'apple-touch-icon-iphone4.png'),
+        cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'apple-touch-icon-ipad3.png'),
+        cms_join_path($config['admin_url'], 'themes', 'OneEleven', 'images', 'favicon', 'ms-application-icon.png')
+    ];
+}
+$src['path'] = $admin_path_url;
+$src['icon'] = $admin_icon_url;
+$src['icon_touch'] = $admin_touch;
+$src['title'] = lang('adminpaneltitle');
+$smarty->assign('src', $src);
+#End::Images & Icon
 
-?>
+$smarty->assign('encoding', get_encoding());
+$smarty->assign('config', $gCms->GetConfig());
+
+$smarty->assign('sitename', $config['admin_title']);

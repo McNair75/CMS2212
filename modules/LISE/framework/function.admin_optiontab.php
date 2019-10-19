@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -54,67 +55,69 @@
 # END_LICENSE
 #-------------------------------------------------------------------------
 
-if( !defined('CMS_VERSION') ) exit;
+if (!defined('CMS_VERSION'))
+    exit;
 
 
 #---------------------
 # Init
 #---------------------
 
-if(!$this->CheckPermission($this->_GetModuleAlias() . '_modify_option'))return;
+if (!$this->CheckPermission($this->_GetModuleAlias() . '_modify_option'))
+    return;
 
 $systemdefs = $this->GetFieldDefs();
 $fielddefs = array(
-	                  $this->ModLang('alias') 		=> 'alias', 
-	                  $this->ModLang('create_time') 	=> 'create_time', 
-	                  $this->ModLang('modified_time') => 'modified_time', 
-	                  $this->ModLang('start_time') 	=> 'start_time', 
-	                  $this->ModLang('end_time') 		=> 'end_time'
-                  );
-                  
-foreach($systemdefs as $onedef)
-{
-	$fielddefs[$onedef->GetName()] = $onedef->GetAlias();
+    $this->ModLang('alias') => 'alias',
+    $this->ModLang('create_time') => 'create_time',
+    $this->ModLang('modified_time') => 'modified_time',
+    $this->ModLang('start_time') => 'start_time',
+    $this->ModLang('end_time') => 'end_time'
+);
+
+foreach ($systemdefs as $onedef) {
+    $fielddefs[$onedef->GetName()] = $onedef->GetAlias();
 }
 
 // pagination options
 $items_per_page = array(
-                          10 => 10,
-                          20 => 20,
-                          50 => 50,
-                          100 => 100,
-                          200 => 200,
-                          300 => 300,
-                          400 => 400,
-                          500 => 500,
-                          1000 => 1000
-                        );
+    10 => 10,
+    20 => 20,
+    50 => 50,
+    100 => 100,
+    200 => 200,
+    300 => 300,
+    400 => 400,
+    500 => 500,
+    1000 => 1000
+);
 
 // module admin section options
 $admin_sections = array(
-                          lang('main') => 'main',
-                          lang('content') => 'content',
-                          lang('layout') => 'layout',
-                          lang('usersgroups') => 'usersgroups',
-                          lang('extensions') => 'extensions',
-                          lang('siteadmin') => 'siteadmin',
-                          lang('myprefs') => 'myprefs',
-                          lang('ecommerce') => 'ecommerce'
-                        );
+    lang('main') => 'main',
+    lang('content') => 'content',
+    lang('lise') => 'lise', //+Lee
+    lang('layout') => 'layout',
+    lang('usersgroups') => 'usersgroups',
+    lang('extensions') => 'extensions',
+    lang('siteadmin') => 'siteadmin',
+    lang('myprefs') => 'myprefs',
+    lang('ecommerce') => 'ecommerce'
+);
 
 // sortorder options
-$sortorder      = array(
+$sortorder = array(
     $this->ModLang('ascending') => 'ASC',
     $this->ModLang('descending') => 'DESC'
 );
 
-$content_ops 			= cmsms()->GetContentOperations();
+$content_ops = cmsms()->GetContentOperations();
 
-$display_inline     	= $this->GetPreference('display_inline', 0);
-$subcategory        	= $this->GetPreference('subcategory', 0);
-$display_create_date 	= $this->GetPreference('display_create_date', 0);
-$reindex_search       = $this->GetPreference('reindex_search', 0);
-$auto_upgrade 		    = $this->GetPreference('auto_upgrade', 0);
+$display_inline = $this->GetPreference('display_inline', 0);
+$subcategory = $this->GetPreference('subcategory', 0);
+$display_create_date = $this->GetPreference('display_create_date', 0);
+$reindex_search = $this->GetPreference('reindex_search', 0);
+$auto_upgrade = $this->GetPreference('auto_upgrade', 0);
 
 #---------------------
 # Smarty processing
@@ -130,8 +133,8 @@ $smarty->assign('input_moddescription', $this->CreateTextArea(false, $id, $this-
 $smarty->assign('input_adminsection', $this->CreateInputDropdown($id, 'adminsection', $admin_sections, -1, $this->GetPreference('adminsection', 'content')));
 
 // Module defaults
-$smarty->assign('input_detailpage', $content_ops->CreateHierarchyDropdown('', $this->GetPreference('detailpage'), $id.'detailpage'));
-$smarty->assign('input_summarypage', $content_ops->CreateHierarchyDropdown('', $this->GetPreference('summarypage'), $id.'summarypage'));
+$smarty->assign('input_detailpage', $content_ops->CreateHierarchyDropdown('', $this->GetPreference('detailpage'), $id . 'detailpage'));
+$smarty->assign('input_summarypage', $content_ops->CreateHierarchyDropdown('', $this->GetPreference('summarypage'), $id . 'summarypage'));
 
 // Item options
 $smarty->assign('input_item_title', $this->CreateInputText($id, 'item_title', $this->GetPreference('item_title', ''), 50));
@@ -153,5 +156,4 @@ $smarty->assign('input_subcategory', $this->CreateInputCheckbox($id, 'subcategor
 $smarty->assign('input_reindex_search', $this->CreateInputCheckbox($id, 'reindex_search', 1, $reindex_search, ($reindex_search ? 'checked="checked"' : '')));
 
 echo $this->ModProcessTemplate('optiontab.tpl');
-
 ?>
