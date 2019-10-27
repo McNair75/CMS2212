@@ -178,6 +178,8 @@ final class cms_config implements ArrayAccess
     $this->_types['ssl_uploads_url'] = self::TYPE_STRING;
     $this->_types['image_uploads_path'] = self::TYPE_STRING;
     $this->_types['image_uploads_url'] = self::TYPE_STRING;
+    $this->_types['themes_url'] = self::TYPE_STRING; //+Lee
+    $this->_types['themes_path'] = self::TYPE_STRING; //+Lee
     $this->_types['ssl_image_uploads_url'] = self::TYPE_STRING;
     $this->_types['debug'] = self::TYPE_BOOL;
     $this->_types['debug_to_log'] = self::TYPE_BOOL;
@@ -196,12 +198,13 @@ final class cms_config implements ArrayAccess
     $this->_types['set_db_timezone'] = self::TYPE_BOOL;
     $this->_types['admin_url'] = self::TYPE_STRING;
     $this->_types['ignore_lazy_load'] = self::TYPE_BOOL;
-	$this->_types['tmp_cache_location'] = self::TYPE_STRING;
-	$this->_types['tmp_templates_c_location'] = self::TYPE_STRING;
-	$this->_types['public_cache_location'] = self::TYPE_STRING;
-	$this->_types['public_cache_url'] = self::TYPE_STRING;
+    $this->_types['tmp_cache_location'] = self::TYPE_STRING;
+    $this->_types['tmp_templates_c_location'] = self::TYPE_STRING;
+    $this->_types['public_cache_location'] = self::TYPE_STRING;
+    $this->_types['public_cache_url'] = self::TYPE_STRING;
     $this->_types['assets_dir'] = self::TYPE_STRING;
     $this->_types['assets_path'] = self::TYPE_STRING;
+    $this->_types['assets_url'] = self::TYPE_STRING;
     $this->_types['permissive_smarty'] = self::TYPE_BOOL;
     $this->_types['startup_mact_processing'] = self::TYPE_BOOL;
 
@@ -467,11 +470,16 @@ final class cms_config implements ArrayAccess
 		  $this->_cache[$key] = $this->offsetGet('uploads_url').'/images';
 		  return $this->_cache[$key];
 
-	  case 'ssl_image_uploads_url':
-          $tmp = $this->offsetGet('image_uploads_url');
-          if( startswith($tmp,'http://' ) ) $tmp = str_replace('http://','https://',$tmp);
-          $this->_cache[$key] = $tmp;
-		  return $this->_cache[$key];
+            case 'themes_path':
+                $this->_cache[$key] = cms_join_path($this->OffsetGet('root_path'), $this->OffsetGet('themes_url'));
+                return $this->_cache[$key];
+
+            case 'ssl_image_uploads_url':
+                $tmp = $this->offsetGet('image_uploads_url');
+                if (startswith($tmp, 'http://'))
+                    $tmp = str_replace('http://', 'https://', $tmp);
+                $this->_cache[$key] = $tmp;
+                return $this->_cache[$key];
 
 	  case 'previews_path':
 		  return TMP_CACHE_LOCATION;
@@ -488,9 +496,13 @@ final class cms_config implements ArrayAccess
       case 'assets_dir':
           return 'assets';
 
-      case 'assets_path':
-          $this->_cache[$key] = $this->OffsetGet('root_path').'/'.$this->OffsetGet('assets_dir');
-          return $this->_cache[$key];
+            case 'assets_path':
+                $this->_cache[$key] = $this->OffsetGet('root_path') . '/' . $this->OffsetGet('assets_dir');
+                return $this->_cache[$key];
+
+            case 'assets_url':
+                $this->_cache[$key] = $this->OffsetGet('root_url') . '/' . $this->OffsetGet('assets_url');
+                return $this->_cache[$key];
 
 	  case 'db_port':
 		  return '';
@@ -637,39 +649,70 @@ final class cms_config implements ArrayAccess
       }
   }
 
-  /**
-   * Returns either the http root url or the https root url depending upon the request mode.
-   *
-   * @deprecated
-   * @return string
-   */
-  public function smart_root_url()
-  {
-	  if( CmsApp::get_instance()->is_https_request() ) return $this->offsetGet('ssl_url');
-	  return $this->offsetGet('root_url');
-  }
+    /**
+     * Returns either the http root url or the https root url depending upon the request mode.
+     *
+     * @deprecated
+     * @return string
+     */
+    public function smart_root_url()
+    {
+        if (CmsApp::get_instance()->is_https_request())
+            return $this->offsetGet('ssl_url');
+        return $this->offsetGet('root_url');
+    }
 
-  /**
-   * Returns either the http uploads url or the https uploads url depending upon the request mode.
-   *
-   * @deprecated
-   * @return string
-   */
-  public function smart_uploads_url()
-  {
-	  if(CmsApp::get_instance()->is_https_request() ) return $this->offsetGet('ssl_uploads_url');
-	  return $this->offsetGet('uploads_url');
-  }
+    /**
+     * Returns either the http uploads url or the https uploads url depending upon the request mode.
+     *
+     * @deprecated
+     * @return string
+     */
+    public function smart_uploads_url()
+    {
+        if (CmsApp::get_instance()->is_https_request())
+            return $this->offsetGet('ssl_uploads_url');
+        return $this->offsetGet('uploads_url');
+    }
 
-  /**
-   * Returns either the http image uploads url or the https image uploads url depending upon the request mode.
-   *
-   * @deprecated
-   * @return string
-   */
-  public function smart_image_uploads_url()
-  {
-	  if(CmsApp::get_instance()->is_https_request() ) return $this->offsetGet('ssl_image_uploads_url');
-	  return $this->offsetGet('image_uploads_url');
-  }
+    /**
+     * Returns either the http image uploads url or the https image uploads url depending upon the request mode.
+     *
+     * @deprecated
+     * @return string
+     */
+    public function smart_image_uploads_url()
+    {
+        if (CmsApp::get_instance()->is_https_request())
+            return $this->offsetGet('ssl_image_uploads_url');
+        return $this->offsetGet('image_uploads_url');
+    }
+
+    /**
+     * Returns either the http image themes url.
+     * @param string name
+     * @return string
+     * @author: Lipit
+     */
+    public function smart_themes_url($params = [])
+    {
+        if ($this->OffsetGet('themes_url') && isset($params['name'])) {
+            $out = $this->OffsetGet('root_url') . '/' .  $this->OffsetGet('themes_url') . '/' .  $params['name'];
+        } else {
+            if (!empty($this->OffsetGet('themes_url'))) {
+                $out = $this->OffsetGet('root_url') . '/' . $this->offsetGet('themes_url');
+            }
+            $out = $this->OffsetGet('root_url') . '/themes';
+        }
+        return $out;
+    }
+    /**
+     * Returns either the http image assets url.
+     * @return string
+     * @author: Lipit
+     */
+    public function smart_assets_url()
+    {
+        return $this->OffsetGet('root_url') . '/' . $this->offsetGet('assets_url');
+    }
 } // end of class
