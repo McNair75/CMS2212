@@ -3,5 +3,6 @@
 /nbproject/*
 /.htaccess
 /config.php
+/license.ini
 /index.php
 /doc/*.sql
