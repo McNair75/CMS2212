@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,97 +54,90 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-class lisefd_CustomFromUDT extends LISEFielddefBase
-{
-  private $_opts = array();
-  
-	public function __construct(&$db_info) 
-	{	
-		parent::__construct($db_info);
-		$this->SetFriendlyType( $this->ModLang('fielddef_' . $this->GetType() ) );
-	}
-  
-  public function GetOptions()
-  {
-    $udts = cmsms()->GetUserTagOperations()->ListUserTags();
-    $udts_opts = array_combine( $udts, $udts);
 
-    $this->_opts['udts'] = array( -1 => lang('none') )  +  $udts_opts; 
-    $this->_opts['source_udt'] = $this->GetOptionValue('source_udt', -1);
-    $this->_opts['validation_udt'] = $this->GetOptionValue('render_for_admin_listing_udt', -1);
-    $this->_opts['validation_udt'] = $this->GetOptionValue('validation_udt', -1);
-    $this->_opts['type'] = $this->GetOptionValue('type', 'Dropdown');
-    $this->_opts['types'] = array(
-                                    'Dropdown'      => $this->ModLang('fielddef_Dropdown'),
-                                    'MultiSelect'   => $this->ModLang('fielddef_MultiSelect'),
-                                    'RadioGroup'    => $this->ModLang('fielddef_RadioGroup'),
-                                    'CheckboxGroup' => $this->ModLang('fielddef_CheckboxGroup')
-                                  );
-    return $this->_opts;
-  }
-  
-  public function RenderForAdminListing($id, $returnid)
-  {
-    $value = parent::RenderForAdminListing($id, $returnid);
-    $udt = $this->GetOptionValue('render_for_admin_listing_udt', -1);
-    
-    if( -1 != $udt) 
-    {
-      $utops = cmsms()->GetUserTagOperations();
-      
-      if( $utops->UserTagExists($udt) )
-      {
-        $params = array(
-                          'returnid' => $returnid,
-                          'id' => $id,
-                          'value' => $value,
-                        );
-                                   
-        return $utops->CallUserTag($udt, $params);
-      }
-    }
-    
-    return $value;
-  }
-  
-	public function CallUDT($udt)
-	{
-    if( -1 == $udt) return array();
+class lisefd_CustomFromUDT extends LISEFielddefBase {
 
-    $utops = cmsms()->GetUserTagOperations();
-    
-    if( $utops->UserTagExists($udt) )
-    {
-      $params = array();           
-      return $utops->CallUserTag($udt, $params);
+    private $_opts = array();
+
+    public function __construct(&$db_info) {
+        parent::__construct($db_info);
+        $this->SetFriendlyType($this->ModLang('fielddef_' . $this->GetType()));
     }
-    
-    return array();
-	}
-  
-  public function Validate(&$errors) 
-  {
-    $errors = parent::Validate($errors);
-       
-    $udt = $this->GetOptionValue('validation_udt', -1);
-    
-    if( -1 != $udt)
-    {
-      $utops = cmsms()->GetUserTagOperations();
-      
-      if( $utops->UserTagExists($udt) )
-      {
-        $value = $this->GetValue();
-        
-        $params = array(
-                          'value' => $value,
-                          'errors' => $errors
-                        );
-                        
-        $errors = $utops->CallUserTag($udt, $params);
-      }
+
+    public function GetOptions() {
+        $udts = cmsms()->GetUserTagOperations()->ListUserTags();
+        $udts_opts = array_combine($udts, $udts);
+
+        $this->_opts['udts'] = array(-1 => lang('none')) + $udts_opts;
+        $this->_opts['source_udt'] = $this->GetOptionValue('source_udt', -1);
+        $this->_opts['validation_udt'] = $this->GetOptionValue('render_for_admin_listing_udt', -1);
+        $this->_opts['validation_udt'] = $this->GetOptionValue('validation_udt', -1);
+        $this->_opts['type'] = $this->GetOptionValue('type', 'Dropdown');
+        $this->_opts['types'] = array(
+            'Dropdown' => $this->ModLang('fielddef_Dropdown'),
+            'MultiSelect' => $this->ModLang('fielddef_MultiSelect'),
+            'RadioGroup' => $this->ModLang('fielddef_RadioGroup'),
+            'CheckboxGroup' => $this->ModLang('fielddef_CheckboxGroup')
+        );
+        return $this->_opts;
     }
-       
-  }  
+
+    public function RenderForAdminListing($id, $returnid) {
+        $value = parent::RenderForAdminListing($id, $returnid);
+        $udt = $this->GetOptionValue('render_for_admin_listing_udt', -1);
+
+        if (-1 != $udt) {
+            $utops = cmsms()->GetUserTagOperations();
+
+            if ($utops->UserTagExists($udt)) {
+                $params = array(
+                    'returnid' => $returnid,
+                    'id' => $id,
+                    'value' => $value,
+                );
+
+                return $utops->CallUserTag($udt, $params);
+            }
+        }
+
+        return $value;
+    }
+
+    public function CallUDT($udt) {
+        if (-1 == $udt)
+            return array();
+
+        $utops = cmsms()->GetUserTagOperations();
+
+        if ($utops->UserTagExists($udt)) {
+            $params = array();
+            return $utops->CallUserTag($udt, $params);
+        }
+
+        return array();
+    }
+
+    public function Validate(&$errors) {
+        $errors = parent::Validate($errors);
+
+        $udt = $this->GetOptionValue('validation_udt', -1);
+
+        if (-1 != $udt) {
+            $utops = cmsms()->GetUserTagOperations();
+
+            if ($utops->UserTagExists($udt)) {
+                $value = $this->GetValue();
+
+                $params = array(
+                    'value' => $value,
+                    'errors' => $errors
+                );
+
+                $errors = $utops->CallUserTag($udt, $params);
+            }
+        }
+    }
+
 }
+
 ?>

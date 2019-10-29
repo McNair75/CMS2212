@@ -1,180 +1,204 @@
 <?php
-#-------------------------------------------------------------------------
-# LISE - List It Special Edition
-# Version 1.2
-# A fork of ListI2
-# maintained by Fernando Morgado AKA Jo Morg
-# since 2015
-#-------------------------------------------------------------------------
-#
-# Original Author: Ben Malen, <ben@conceptfactory.com.au>
-# Co-Maintainer: Simon Radford, <simon@conceptfactory.com.au>
-# Web: www.conceptfactory.com.au
-#
-#-------------------------------------------------------------------------
-#
-# Maintainer since 2011 up to 2014: Jonathan Schmid, <hi@jonathanschmid.de>
-# Web: www.jonathanschmid.de
-#
-#-------------------------------------------------------------------------
-#
-# Some wackos started destroying stuff since 2012 and stopped at 2014:
-#
-# Tapio Löytty, <tapsa@orange-media.fi>
-# Web: www.orange-media.fi
-#
-# Goran Ilic, <uniqu3e@gmail.com>
-# Web: www.ich-mach-das.at
-#
-#-------------------------------------------------------------------------
-#
-# LISE is a CMS Made Simple module that enables the web developer to create
-# multiple lists throughout a site. It can be duplicated and given friendly
-# names for easier client maintenance.
-#
-#-------------------------------------------------------------------------
-# BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# This file is part of LISE
-# LISE program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# LISE program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-# Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
-#
-#-------------------------------------------------------------------------
-# END_LICENSE
-#-------------------------------------------------------------------------
 
-if( !defined('CMS_VERSION') ) exit;
+if (!defined('CMS_VERSION')) {
+    exit;
+}
 
-if (!$this->CheckPermission($this->_GetModuleAlias() . '_modify_category')) return;
+if (!$this->CheckPermission($this->_GetModuleAlias() . '_modify_category')) {
+    return;
+}
 
-#---------------------
-# Check params
-#---------------------
+//---------------------
+// Check params
+//---------------------
+//Start MLE
+global $hls, $hl, $mleblock;
+$thisURL = $_SERVER['SCRIPT_NAME'] . '?';
+foreach ($_GET as $key => $val) {
+    if ('hl' != $key) {
+        $thisURL .= $key . '=' . $val . '&amp;';
+    }
+}
+if (isset($hls)) {
+    $langList = ' &nbsp; &nbsp; ';
+    foreach ($hls as $key => $mle) {
+        $langList .= ($hl == $key) ? $mle['flag'] . ' ' : '<a href="' . $thisURL . 'hl=' . $key . '">' . $mle['flag'] . '</a> ';
+    }
+}
+$smarty->assign('langList', $langList);
+//End MLE
 
 if (isset($params['cancel'])) {
-
     $params = array('active_tab' => 'categorytab');
     $this->Redirect($id, 'defaultadmin', $returnid, $params);
 }
 
-#---------------------
-# Init params
-#---------------------
+//---------------------
+// Init params
+//---------------------
 
-$category_id      			= lise_utils::init_var('category_id', $params, -1);
-$name       			 	= lise_utils::init_var('name', $params, '');
-$alias		 			 	= lise_utils::init_var('alias', $params, '');
-$description				= lise_utils::init_var('description', $params, '');
-$parent_id 				 	= lise_utils::init_var('parent_id', $params, -1);
-$active      			 	= 1;
+$category_id = lise_utils::init_var('category_id', $params, -1);
+$name = lise_utils::init_var('name', $params, '');
+$alias = lise_utils::init_var('alias', $params, '');
+$description = lise_utils::init_var('description', $params, '');
+$parent_id = lise_utils::init_var('parent_id', $params, -1);
+$active = 1;
 
-#---------------------
-# Init Item
-#---------------------
+$icon_upload = lise_utils::init_var('icon_upload', $params, '');
+$picture_upload = lise_utils::init_var('picture_upload', $params, '');
 
-$obj = $this->LoadCategoryByIdentifier('category_id', $category_id);
+$category_noparent = $this->GetPreference('category_noparent', 0);
 
-#---------------------
-# Submit
-#---------------------
+$allow_category_sametitle = $this->GetPreference('allow_category_sametitle', 0);
+//---------------------
+// Init Item
+//---------------------
+
+$obj = $this->LoadCategoryByIdentifier('category_id', $category_id, $mleblock);
+//---------------------
+// Submit
+//---------------------
 
 if (isset($params['submit']) || isset($params['apply']) || isset($params['save_create'])) {
+    $destdir = cms_join_path($config['image_uploads_path'], $this->GetName());
 
-	$errors = array();
+    $errors = array();
+
+    if (!is_dir($destdir)) {
+        cge_dir::mkdirr($destdir);
+    }
+
+    // Get new position
+    $query_cid = 'SELECT max(category_id) + 1 FROM ' . cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_category';
+    $new_position = $db->GetOne($query_cid);
+    $cid = ($category_id == -1) ? $new_position : $category_id;
+
+    $handler = cge_setup::get_uploader($id, $destdir);
+    $handler->set_allow_overwrite(true);
+    $res = $handler->handle_upload('icon_upload', 'i_' . substr(md5($cid), 0, 6), '');
+    $err = $handler->get_error();
+
+    if ($res === false) {
+        $icon_upload = $obj->icon;
+    } else {
+        $icon_upload = 'images/' . $this->GetName() . '/' . $res;
+    }
+
+    $handler = cge_setup::get_uploader($id, $destdir);
+    $handler->set_allow_overwrite(true);
+    $res_picture = $handler->handle_upload('picture_upload', 'p_' . substr(md5($cid), 0, 6), '');
+
+    if ($res_picture === false) {
+        $picture_upload = $obj->picture;
+    } else {
+        $picture_upload = 'images/' . $this->GetName() . '/' . $res_picture;
+    }
+
+    // handle image delete first
+    if (isset($params['deleteimg'])) {
+        $srcname = cms_join_path($config['uploads_path'], $params['deleteimg']);
+        @unlink($srcname);
+        $icon_upload = '';
+    }
+
+    // handle image delete first
+    if (isset($params['picture_deleteimg'])) {
+        $srcname = cms_join_path($config['uploads_path'], $params['picture_deleteimg']);
+        @unlink($srcname);
+        $picture_upload = '';
+    }
 
     // check category name
-    if ($name == '') {
+    if (empty($name)) {
         $errors[] = $this->ModLang('category_name_empty');
     }
 
-    // check alias
-/*    if (!lise_utils::is_valid_alias($alias) && !empty($alias)) {
-        $errors[] = $this->ModLang('alias_invalid');
-    }*/
-	
-	// Check for duplicate
-	$parms = array();
-	$query = 'SELECT * FROM ' . cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_category WHERE category_alias = ?';
-	$parms[] = $alias;
+    if (empty($alias)) {
+        $alias = munge_string_to_url($name, true, true);
+    } else {
+        $alias = munge_string_to_url($alias, true, true);
+    }
+    if (!$allow_category_sametitle) {
+        // Check for duplicate
+        if ($cid > 0) {
+            $query = 'SELECT category_id FROM ' . cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_category WHERE category_alias = ? AND category_id != ?';
+            $exists = $db->GetOne($query, array($alias, $cid));
+        } else {
+            $query = 'SELECT category_id FROM ' . cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_category WHERE category_alias = ?';
+            $exists = $db->GetOne($query, array($alias));
+        }
+        if ($exists) {
+            $errors[] = $this->ModLang('item_alias_exists');
+        }
+    }
 
-	if($category_id > 0){
-		$query .= ' AND category_id != ?';
-		$parms[] = $category_id;
-	}
-	
-	$exists = $db->GetOne($query, $parms);
+    // title and required fields have values, let's continue
+    if (empty($errors)) {
+        $obj->name = $name;
+        $obj->alias = $alias;
+        $obj->description = $description;
+        $obj->parent_id = $parent_id;
+        $obj->icon = $icon_upload;
+        $obj->picture = $picture_upload;
+        $obj->active = isset($params['active']) ? 1 : 0;
 
-    if ($exists) {
-        $errors[] = $this->ModLang('category_alias_exists');
-    }	
+        $this->SaveCategory($obj, $mleblock);
 
-	// title and required fields have values, let's continue
-	if (empty($errors)) {
-	
-		$obj->name        	= $name;
-		$obj->alias		 	= $alias;
-		$obj->description	= $description;
-		$obj->parent_id 	= $parent_id;		
-		$obj->active       	= isset($params['active']) ? 1 : 0;
-		
-		$this->SaveCategory($obj);
-		
-		// if apply and ajax           
-		if (isset($params['apply']) && isset($params['ajax'])) {
-			$response = '<EditItem>';
-			$response .= '<Response>Success</Response>';
-			$response .= '<Details><![CDATA[' . $this->ModLang('changessaved') . ']]></Details>';               
-			$response .= '</EditItem>';
-			echo $response;
-			return;
-		} 
-		
-		// if save and create new
-		if (isset($params['save_create']) ) {
-			$this->Redirect($id, 'admin_editcategory', $returnid, array(
-				'message' => 'savecreate_message'
-			));
-		}  		    
+        // if apply and ajax
+        if (isset($params['apply']) && isset($params['ajax'])) {
+            $response = '<EditItem>';
+            $response .= '<Response>Success</Response>';
+            $response .= '<Details><![CDATA[' . $this->ModLang('changessaved') . ']]></Details>';
+            $response .= '</EditItem>';
+            echo $response;
 
-		// show saved message
-		if (isset($params['submit'])) {
-			$this->Redirect($id, 'defaultadmin', $returnid, array(
-				'active_tab' => 'categorytab',
-				'message' => 'changessaved'
-			));
-			
-		} else {
-			echo $this->ShowMessage($this->ModLang('changessaved'));
-		}
-		
-	} // end error check
-	
+            return;
+        }
+
+        // if save and create new
+        if (isset($params['save_create'])) {
+            $this->Redirect($id, 'admin_editcategory', $returnid, array(
+                'message' => 'savecreate_message',
+            ));
+        }
+
+        // show saved message
+        if (isset($params['submit'])) {
+            $this->Redirect($id, 'defaultadmin', $returnid, array(
+                'active_tab' => 'categorytab',
+                'message' => 'changessaved',
+            ));
+        } else {
+            echo $this->ShowMessage($this->ModLang('changessaved'));
+        }
+    } // end error check
 } // end submit or apply
-elseif($obj->category_id > 0) {
+elseif ($obj->category_id > 0) {
 
-	$category_id 	= $obj->category_id;	
-	$name 			= $obj->name;
-	$alias		  	= $obj->alias;
-	$description	= $obj->description;
-	$parent_id 		= $obj->parent_id;
-	$active       	= $obj->active;
+    $icon_upload = $obj->icon;
+    $picture_upload = $obj->picture;
+    $category_id = $obj->category_id;
+    $name = $obj->name;
+    $alias = $obj->alias;
+    $description = $obj->description;
+    $parent_id = $obj->parent_id;
+    $active = $obj->active;
+
+    $href = cms_join_path($config['uploads_url'], $obj->picture);
+    $params['src'] = $href;
+    $params['filter_croptofit'] = '48,48';
+    $params['notag'] = true;
+    $params['noembed'] = true;
+    $params['quality'] = '100%';
+    $output = cgsi_utils::process_image($params);
+    $url = $output['output'];
+    $url_photo = '<a href="' . $href . '" class="cbox thumb"><img src="' . $url . '" width="48" height="48" /></a>';
+    $smarty->assign('url_photo', $url_photo);
 }
 
-#---------------------
-# Message control
-#---------------------
-
+//---------------------
+// Message control
+//---------------------
 // display errors if there are any
 if (!empty($errors)) {
     if (isset($params['apply']) && isset($params['ajax'])) {
@@ -187,39 +211,54 @@ if (!empty($errors)) {
         $response .= ']]></Details>';
         $response .= '</EditItem>';
         echo $response;
+
         return;
     } else {
         echo $this->ShowErrors($errors);
     }
 }
 
-if(isset($params['message']) && empty($errors)) 
+if (isset($params['message']) && empty($errors)) {
     echo $this->ShowMessage($this->ModLang('changessaved_create'));
+}
 
-#---------------------
-# Smarty processing
-#---------------------
+//---------------------
+// Smarty processing
+//---------------------
+
+$desc_turn = $this->GetPreference('category_enabled_wysiwyg');
 
 $smarty->assign('categoryObject', $obj);
 
 $smarty->assign('backlink', $this->CreateBackLink('categorytab'));
-$smarty->assign('title',     (isset($category_id) ? $this->ModLang('edit_category') : $this->ModLang('add', $this->ModLang('category'))));
+$smarty->assign('title', (isset($category_id) ? $this->ModLang('edit_category') : $this->ModLang('add', $this->ModLang('category'))));
 
 $smarty->assign('startform', $this->CreateFormStart($id, 'admin_editcategory', $returnid, 'post', 'multipart/form-data', false, '', $params));
 $smarty->assign('endform', $this->CreateFormEnd());
 
-$smarty->assign('input_category',  $this->CreateInputText($id, 'name', $name, 20));
-$smarty->assign('input_alias', $this->CreateInputText($id, 'alias', $alias, 20, 255));
-$smarty->assign('input_category_description', $this->CreateTextArea(true, $id, $description, 'description', '', '', '', '', '80', '3'));
+$smarty->assign('icon_upload', $icon_upload);
+$smarty->assign('picture_upload', $picture_upload);
+
+$smarty->assign('category_noparent', $category_noparent);
+
+$smarty->assign('input_category', $this->CreateInputText($id, 'name', $name, 50));
+$smarty->assign('input_alias', $this->CreateInputText($id, 'alias', $alias, 50, 255));
+$smarty->assign('input_category_description', $this->CreateTextArea((($desc_turn) ? true : false), $id, $description, 'description', '', '', '', '', '80', '3'));
 $smarty->assign('input_active', $this->CreateInputcheckbox($id, 'active', 1, $active));
 
 $smarty->assign('input_parent', $this->CreateInputDropdown($id, 'parent_id', LISECategoryOperations::GetHierarchyList($this, true, $category_id), -1, $parent_id));
-/*
-$smarty->assign('submit', $this->CreateInputSubmit($id, 'submit', lang('submit')));
-$smarty->assign('apply', $this->CreateInputSubmit($id, 'apply', lang('apply')));
-$smarty->assign('save_create', $this->CreateInputSubmit($id, 'save_create', $this->ModLang('save_create')));
-$smarty->assign('cancel', $this->CreateInputSubmit($id, 'cancel', lang('cancel')));
-*/
-echo $this->ModProcessTemplate('editcategory.tpl');
 
-?>
+//Status: Active Languages
+$language_status = active_languages();
+if ($language_status) {
+    $smarty->assign('activelang', $language_status);
+}
+//Status: End Active Languages
+
+/*
+  $smarty->assign('submit', $this->CreateInputSubmit($id, 'submit', lang('submit')));
+  $smarty->assign('apply', $this->CreateInputSubmit($id, 'apply', lang('apply')));
+  $smarty->assign('save_create', $this->CreateInputSubmit($id, 'save_create', $this->ModLang('save_create')));
+  $smarty->assign('cancel', $this->CreateInputSubmit($id, 'cancel', lang('cancel')));
+ */
+echo $this->ModProcessTemplate('editcategory.tpl');

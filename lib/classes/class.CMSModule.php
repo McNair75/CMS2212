@@ -2533,6 +2533,12 @@ abstract class CMSModule
         return cms_module_ListTemplates($this, $modulename);
     }
 
+    final public function ListAdminTemplates($modulename = '')
+    {
+        $this->_loadTemplateMethods();
+        return cms_module_ListAdminTemplates($this, $modulename);
+    }
+
     /**
      * Returns a database saved template.  This should be used for admin functions only, as it doesn't
      * follow any smarty caching rules.

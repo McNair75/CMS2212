@@ -1,70 +1,21 @@
 {if $items|@count > 0}
-
-	{if $pagecount > 1}
-	<!-- pagination -->
-	<p>
-		{if $pagenumber > 1}
-			{$firstpage}&nbsp;{$prevpage}&nbsp;
-		{/if}
-			{foreach from=$pagelinks item=page}
-				{$page->link}
-			{/foreach}
-		{if $pagenumber < $pagecount}
-			&nbsp;{$nextpage}&nbsp;{$lastpage}
-		{/if}
-	</p>
-	<!-- pagination //-->
-	{/if}
-	
-	<!-- items -->
-	{foreach from=$items item=item}
-	<!-- item -->
-	<div class="item">
-	
-		<h2 class="item-title">{$item->title}</h2>
-	
-		{if !empty($item->fielddefs)}
-		<!-- field definitions -->
-		<div class="item-properties">
-			{foreach from=$item->fielddefs item=fielddef}
-	
-			{*
-				Categories were moved to field definitions.
-				If you need Categories, create new Field definition with alias "category"
-				and Categories will be available again.
-			*}
-	
-			{if $fielddef.type == 'Categories' && ($fielddef.value != '')}
-	
-			{* use LISELoader plugin if you need Category information in default module action templates *}
-			{LISELoader item='category' force_array=1 value=$fielddef.value assign='cats'}
-	
-			<!-- categories -->
-			<div class="item-category">
-				Category: {$cats|implode:','}
-			</div>
-			<!-- categories //-->
-			{/if}
-	
-			{if $fielddef.value && $fielddef.type != 'Categories'}
-				{if $fielddef.type == 'SelectFile' || $fielddef.type == 'FileUpload'}
-					{$fielddef.name}: <a href="{$fielddef->GetImagePath(true)}/{$fielddef.value}">{$fielddef.value}</a><br />
-				{elseif $fielddef.type == 'SelectDateTime'}
-					{$fielddef.name}: {$fielddef.value|cms_date_format}<br />
-				{else}
-					{$fielddef.name}: {$fielddef.value}<br />
-				{/if}
-			{/if}
-	
-			{/foreach}
-		</div>
-		<!-- field definitions //-->
-		{/if}
-	
-		<a href="{$item->url}">more</a>
-	</div>
-	<!-- item //-->
-	{/foreach}
-	<!-- items //-->
-
+    {cycle values="odd,even" name='foo' print=false reset=true advance = false}
+    {foreach from=$items name=cms key=k item=item}
+        {if !empty($item->fielddefs)}
+            {foreach from=$item->fielddefs item=fielddef}
+                {if $fielddef.value && $fielddef.type != 'Categories'}
+                    {if $fielddef.type == 'SelectFile' || $fielddef.type == 'FileUpload'}
+                        {assign var="src" value="{$fielddef->GetImagePath(true)}/{$fielddef.value}"}
+                    {/if}
+                {/if}
+            {/foreach}
+        {/if}
+        {*if $foo == 'odd'}old{else}even{/if*}
+        {*cycle name='foo'*}
+        {*if $item@index eq 0} class="active"{/if*}
+        {assign var="noimage" value="{themes_url}/royallove/images/people/grooms-1.png"}
+        <img src="{if $item->fielddefs.aliasfield->value}{CGSmartImage src="{$src}" alias="std_thumbnail"}{else}{CGSmartImage src="{$noimage}" alias="std_thumbnail"}{/if}" alt="{$item->title}">
+        {$item->desc|default:'--'}
+        <a href="{$item->url}">more</a>
+    {/foreach}
 {/if}

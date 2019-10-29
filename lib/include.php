@@ -34,6 +34,7 @@ require_once($dirname . DIRECTORY_SEPARATOR . 'autoloader.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'misc.functions.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'module.functions.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'version.php');
+require_once($dirname . DIRECTORY_SEPARATOR . 'mle.functions.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'page.functions.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'content.functions.php');
 require_once($dirname . DIRECTORY_SEPARATOR . 'translation.functions.php');
@@ -159,6 +160,102 @@ if (!isset($CMS_INSTALL_PAGE)) {
     \CMSMS\Async\JobManager::get_instance()->trigger_async_processing();
 }
 
+#Start MLE
+$hl = '';
+$mleblock = '';
+$mleblockfallback = '';
+$mlegcbfallback = '';
+$mlelocale = '';
+$mlelocale_cms = '';
+$smarty = $_app->GetSmarty();
+$hls = Define_MultiLanguage();
+
+if (isset($hls)) {
+    if (defined('DEFAULT_LANG'))
+        $old_mle_config = true;
+    if (!defined('DEFAULT_LANG')) {
+        $default_lang_temp = get_site_preference('default_lang_mle', '');
+
+        if (empty($default_lang_temp)) {
+            $missing_mle_default = true;
+            $config_langs_temp = array_keys($hls);
+
+            if (count($config_langs_temp) > 0)
+                $default_lang_temp = $config_langs_temp[0];
+            else
+                $default_lang_temp = 'en_US';
+        }
+        define('DEFAULT_LANG', $default_lang_temp);
+    }
+
+    #set_site_preference('force_mle_default', 1);
+    #set_site_preference('default_lang_fallback', 1);
+
+    if (!isset($force_mle_default))
+        $force_mle_default = get_site_preference('force_mle_default', 0);
+    if (!isset($default_lang_fallback))
+        $default_lang_fallback = get_site_preference('default_lang_fallback', 0);
+
+    $mle = '';
+    if ($config['url_rewriting'] == 'internal')
+        $mle = check_mle_pretty_urls($hls);
+    if (!empty($_POST['hl']))
+        $mle = $_POST['hl'];
+    if (!empty($_GET['hl']))
+        $mle = $_GET['hl'];
+
+    if (!empty($mle) && in_array($mle, array_keys($hls)))
+        $hl = $mle;
+    elseif (isset($_COOKIE['mle']) && in_array($_COOKIE['mle'], array_keys($hls)))
+        $hl = $_COOKIE['mle'];
+    elseif (empty($force_mle_default)) {
+        $hl = language_user_setting($hls);
+    } else {
+        $hl = DEFAULT_LANG;
+    }
+
+    #+Lee
+    //$hl = trim(get_site_preference('frontendlang'));
+
+    $pu_root_url = parse_url($config['root_url']);
+    $pu_root_url['path'] = (empty($pu_root_url['path'])) ? '/' : $pu_root_url['path'];
+    $cookie_path = rtrim($pu_root_url['path'], '/') . '/';
+    $cookie_domain = (strpos($pu_root_url['host'], '.') !== false) ? $pu_root_url['host'] : null;
+    $cookie_secure = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? true : false;
+    setcookie('mle', $hl, time() + 1800, $cookie_path, $cookie_domain, $cookie_secure);
+
+    $mlelocale_cms = (isset($hls[$hl]['locale_cms'])) ? $hls[$hl]['locale_cms'] : $hl;
+    $mleblock = '_' . $hls[$hl]['block'];
+    $mleparent = strtolower((isset($hls[$hl]['parent'])) ? $hls[$hl]['parent'] : $hls[$hl]['block']);
+    $mleflag = $hls[$hl]['flag'];
+    $mletext = (isset($hls[$hl]['text'])) ? $hls[$hl]['text'] : '';
+    $mlelocale = (isset($hls[$hl]['locale'])) ? $hls[$hl]['locale'] : $mlelocale_cms;
+    if (!empty($default_lang_fallback) && (DEFAULT_LANG != $hl))
+        $mleblockfallback = '_' . $hls[DEFAULT_LANG]['block'];
+    if (DEFAULT_LANG != $hl)
+        $mlegcbfallback = '_' . $hls[DEFAULT_LANG]['block'];
+
+
+    // $config['locale'] = $mlelocale_cms;
+    $gCms->config['locale'] = $mlelocale_cms;
+    $gCms->current_language = $mlelocale_cms;
+    opacity_flags(get_site_preference('opacity_flags_pattern', 'opacity:1;'), get_site_preference('opacity_flags_percent', 22));
+    $smarty->assign('hl', $hl);
+    $smarty->assign('lang_block', $mleblock);
+    $smarty->assign('lang_parent', $mleparent);
+    $smarty->assign('lang_flag', $mleflag);
+    $smarty->assign('lang_text', $mletext);
+    $smarty->assign('lang_locale', $mlelocale);
+    $smarty->compile_id = $hl;
+
+    $smarty->assign('lang_default', $hls[DEFAULT_LANG]['locale_cms']);
+    foreach ($hls as $key => $arr)
+        $mle_languages[] = $arr['locale_cms'];
+    $smarty->assign_by_ref('lang_languages', $mle_languages);
+    unset($mle_languages[$mlelocale]);
+    $smarty->assign_by_ref('lang_languages_nocurrent', $mle_languages);
+}
+#End MLE
 #Setup language stuff.... will auto-detect languages (Launch only to admin at this point)
 if (isset($CMS_ADMIN_PAGE))
     CmsNlsOperations::set_language();

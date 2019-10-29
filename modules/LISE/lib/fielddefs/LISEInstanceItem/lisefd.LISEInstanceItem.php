@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,82 +54,74 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-class lisefd_LISEInstanceItem extends LISEFielddefBase
-{
 
-	public function __construct(&$db_info) 
-	{	
-		parent::__construct($db_info);		
-		$this->SetFriendlyType( $this->ModLang( 'fielddef_' . $this->GetType() ) );	
+class lisefd_LISEInstanceItem extends LISEFielddefBase {
 
-	}
-
-	public function RenderInput($id, $returnid)
-	{
-		$type = $this->GetOptionValue('subtype', 'Dropdown');
-		$obj = LISEFielddefOperations::LoadFielddefByType($type);
-		
-		if(is_object($obj))
-			return $obj->RenderInput($id, $returnid);
-			
-		return false;
-	}
-
-	public function GetOptions()
-	{
-		if( !isset($this->options) )
-	  {
-		  $instance = $this->GetOptionValue('instance');
-		  $identifier = $this->GetOptionValue('identifier', 'item_id');
-		  $db = cmsms()->GetDb();
-		  $mod = cmsms()->GetModuleInstance($instance);
-		  $this->options = LISEItemOperations::GetIdentifier($mod, $identifier);	
+    public function __construct(&$db_info) {
+        parent::__construct($db_info);
+        $this->SetFriendlyType($this->ModLang('fielddef_' . $this->GetType()));
     }
-    
-    return $this->options;
-	}
 
-	public function Instances()
-	{
-		$instances = cmsms()->GetModuleInstance(LISE)->ListModules();
-		
-		$output = array();
-		foreach($instances as $instance) 
-    {	
-			$output[$instance->module_name] = $instance->module_name;
-		}
-	
-		return $output;
-	}
+    public function RenderInput($id, $returnid) {
+        $type = $this->GetOptionValue('subtype', 'Dropdown');
+        $obj = LISEFielddefOperations::LoadFielddefByType($type);
 
-	public function SubTypes()
-	{
-    $mod = cmsms()->GetModuleInstance(LISE);
-    
-    return array(
-                  'Dropdown'      => $mod->ModLang('fielddef_Dropdown'),
-                  'MultiSelect'   => $mod->ModLang('fielddef_MultiSelect'),
-                  'RadioGroup'    => $mod->ModLang('fielddef_RadioGroup'),
-                  'CheckboxGroup' => $mod->ModLang('fielddef_CheckboxGroup')
-                );
-	}
-	
-	public function Identifiers()
-	{
+        if (is_object($obj))
+            return $obj->RenderInput($id, $returnid);
+
+        return false;
+    }
+
+    public function GetOptions() {
+        if (!isset($this->options)) {
+            $instance = $this->GetOptionValue('instance');
+            $identifier = $this->GetOptionValue('identifier', 'item_id');
+            $db = cmsms()->GetDb();
+            $mod = cmsms()->GetModuleInstance($instance);
+            $this->options = LISEItemOperations::GetIdentifier($mod, $identifier);
+        }
+
+        return $this->options;
+    }
+
+    public function Instances() {
+        $instances = cmsms()->GetModuleInstance(LISE)->ListModules();
+
+        $output = array();
+        foreach ($instances as $instance) {
+            $output[$instance->module_name] = $instance->module_name;
+        }
+
+        return $output;
+    }
+
+    public function SubTypes() {
+        $mod = cmsms()->GetModuleInstance(LISE);
+
         return array(
-                      'item_id' => 'item_id',
-                      'alias'   => 'alias',
-                      'title'   => 'title',
-                      'key1'    => 'key1',
-                      'key2'    => 'key2',
-                      'key3'    => 'key3'
-                    );
-	}	
-	
-	public function Separator()
-	{
-		return $this->GetOptionValue('separator');	
-	}	
-		
-} // end of class
+            'Dropdown' => $mod->ModLang('fielddef_Dropdown'),
+            'MultiSelect' => $mod->ModLang('fielddef_MultiSelect'),
+            'RadioGroup' => $mod->ModLang('fielddef_RadioGroup'),
+            'CheckboxGroup' => $mod->ModLang('fielddef_CheckboxGroup')
+        );
+    }
+
+    public function Identifiers() {
+        return array(
+            'item_id' => 'item_id',
+            'alias' => 'alias',
+            'title' => 'title',
+            'key1' => 'key1',
+            'key2' => 'key2',
+            'key3' => 'key3'
+        );
+    }
+
+    public function Separator() {
+        return $this->GetOptionValue('separator');
+    }
+
+}
+
+// end of class
 ?>

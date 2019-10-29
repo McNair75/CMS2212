@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,52 +54,51 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-class lisefd_Checkbox extends LISEFielddefBase
-{
-	public function __construct(&$db_info, $caller_object) 
-	{	
-		parent::__construct($db_info, $caller_object);
-		
-		$this->SetFriendlyType($this->ModLang('fielddef_'.$this->GetType()));
-	}
-	
-	public function Validate(&$errors) 
-	{
-		if($this->GetValue("string") == 0 && $this->IsRequired()) {
-	
-			$errors[] = $this->ModLang('required_field_empty') . ' (' . $this->GetName() . ')';
-		}
-	}
 
-	public function RenderForAdminListing($id, $returnid)
-	{
-	
-		$output = '<div class="init-ajax-toggle">';
-	
-		$admintheme = cms_utils::get_theme_object();	
-		$mod = $this->GetModuleInstance(true);
-	
-		if ($this->GetValue("string")) {
+class lisefd_Checkbox extends LISEFielddefBase {
 
-			$output .= $mod->CreateLink($id, 'admin_togglefielddefvalue', $returnid, $admintheme->DisplayImage('icons/system/true.gif', '', '', '', 'systemicon'), array(
-				'fielddef_id' => $this->GetId(),
-				'item_id' => $this->GetItemId(),
-				'value' => 0
-			));		
-		} 
-		else {
-		
-			$output .= $mod->CreateLink($id, 'admin_togglefielddefvalue', $returnid, $admintheme->DisplayImage('icons/system/false.gif', '', '', '', 'systemicon'), array(
-				'fielddef_id' => $this->GetId(),
-				'item_id' => $this->GetItemId(),
-				'value' => 1
-			));	
-		}	
-		
-		$output .= '</div>';
-		
-		return $output;
-	}	
-	
-} // end of class
+    public function __construct(&$db_info, $caller_object) {
+        parent::__construct($db_info, $caller_object);
+
+        $this->SetFriendlyType($this->ModLang('fielddef_' . $this->GetType()));
+    }
+
+    public function Validate(&$errors) {
+        if ($this->GetValue("string") == 0 && $this->IsRequired()) {
+
+            $errors[] = $this->ModLang('required_field_empty') . ' (' . $this->GetName() . ')';
+        }
+    }
+
+    public function RenderForAdminListing($id, $returnid) {
+
+        $output = '<div class="init-ajax-toggle">';
+
+        $admintheme = cms_utils::get_theme_object();
+        $mod = $this->GetModuleInstance(true);
+
+        if ($this->GetValue("string")) {
+
+            $output .= $mod->CreateLink($id, 'admin_togglefielddefvalue', $returnid, $admintheme->DisplayImage('icons/system/true.gif', '', '', '', 'systemicon'), array(
+                'fielddef_id' => $this->GetId(),
+                'item_id' => $this->GetItemId(),
+                'value' => 0
+            ));
+        } else {
+
+            $output .= $mod->CreateLink($id, 'admin_togglefielddefvalue', $returnid, $admintheme->DisplayImage('icons/system/false.gif', '', '', '', 'systemicon'), array(
+                'fielddef_id' => $this->GetId(),
+                'item_id' => $this->GetItemId(),
+                'value' => 1
+            ));
+        }
+
+        $output .= '</div>';
+
+        return $output;
+    }
+
+}
+
+// end of class
 ?>

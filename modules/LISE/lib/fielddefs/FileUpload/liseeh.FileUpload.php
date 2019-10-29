@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,127 +54,124 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-class liseeh_FileUpload extends LISEEventHandlerBase
-{
-	#---------------------
-	# Variables
-	#---------------------	
 
-	private $_data;
+class liseeh_FileUpload extends LISEEventHandlerBase {
+    #---------------------
+    # Variables
+    #---------------------	
 
-	#---------------------
-	# Magic methods
-	#---------------------		
-	
-	public function __construct(LISEFielddefBase &$field)
-	{
-		parent::__construct($field);
-	}
-	
-	#---------------------
-	# Overwritable events
-	#---------------------	
-	
-	public function OnItemDelete(LISE &$mod)
-	{
-		// Delete file
-		$path = cms_join_path($this->GetImagePath(), $this->GetValue());
-		@unlink($path);		
-	}
-	
-	public function ItemSavePreProcess(&$errors, &$params) 
-	{			
-		// Check if we need delete
-		if (isset($params['delete_customfield'][$this->GetId()])) {
-				
-			if($params['delete_customfield'][$this->GetId()] == 'delete') {
-			
-				// Delete file
-				$path = cms_join_path($this->GetImagePath(), $this->GetValue());
-				@unlink($path);
-				
-				// Reset value
-				$this->SetValue();
-			}
-		}
-		else // Apply new value
-    {
-			// Fill _data from $_FILES
-      if( isset($_FILES['m1_customfield']) )
-      {
-        //$id is statically part of key, not ideal.
-        $files = self::_diverse_array($_FILES['m1_customfield']);
-      }
+    private $_data;
 
-      if(isset($files[$this->GetId()]))
-        $this->_data = $files[$this->GetId()]; // <- My assumption is that $_FILES contains correct structure and therefore array is complete. Am i wrong? 1 + 1 = 2!
+    #---------------------
+    # Magic methods
+    #---------------------		
 
-      // Check that _data is valid
-      if(isset($this->_data) && $this->_data['error'] === 0) 
-      {  
-        // Validate errors
-        if(strpos($this->GetOptionValue('allowed'), lisefd_FileUpload::_ext($this->_data['name'])) === FALSE) 
-        {
-          $errors[] = $this->ModLang('error_bad_extension') . ' (' . $this->GetName() . ')';
-        }        
-
-				
-				// Set Value from _data
-				if(empty($errors)) 
-        {
-					$this->SetValue($this->_data['name']);
-				}			
-			}
-		}
-						
-		parent::ItemSavePreProcess($errors, $params);
-	}	
-	
-	public function ItemSavePostProcess(&$errors, &$params) 
-	{
-		// Move file to correct place, nothing else.
-		if(isset($this->_data) && $this->_data['error'] === 0) {
-		
-			// Get file path
-			$path = $this->GetImagePath();
-			
-			// Assure directory exists
-			if(!is_dir($path))
-				@mkdir($path, 0777, true);
-
-			// Merge filename into path
-			$path = cms_join_path($path, $this->GetValue());
-				
-			// Execute move.
-			if(!move_uploaded_file($this->_data['tmp_name'], $path)) {
-			
-				$errors[] = $this->ModLang('error_file_permissions');
-			}
-		}
-	}
-
-	#---------------------
-	# Private methods
-	#---------------------	
-	
-	private static function _diverse_array($vector) 
-  {
-		$result = array();
-    
-    if( is_array($vector) )
-    {
-		  foreach($vector as $key1 => $value1)
-      {
-			  foreach($value1 as $key2 => $value2) 
-        {
-				  $result[$key2][$key1] = $value2;
-			  }
-		  }
+    public function __construct(LISEFielddefBase &$field) {
+        parent::__construct($field);
     }
-    
-		return $result;
-	} 	
-	
-} // end of class
 
+    #---------------------
+    # Overwritable events
+    #---------------------	
+
+    public function OnItemDelete(LISE &$mod) {
+        // Delete file
+        $path = cms_join_path($this->GetImagePath(), $this->GetValue());
+        @unlink($path);
+    }
+
+    public function ItemSavePreProcess(&$errors, &$params) {
+        // Check if we need delete
+        if (isset($params['delete_customfield'][$this->GetId()])) {
+
+            if ($params['delete_customfield'][$this->GetId()] == 'delete') {
+
+                // Delete file
+                $path = cms_join_path($this->GetImagePath(), $this->GetValue());
+                @unlink($path);
+
+                // Reset value
+                $this->SetValue();
+            }
+        } else { // Apply new value
+            // Fill _data from $_FILES
+            if (isset($_FILES['m1_customfield'])) {
+                //$id is statically part of key, not ideal.
+                $files = self::_diverse_array($_FILES['m1_customfield']);
+            }
+
+            if (isset($files[$this->GetId()]))
+                $this->_data = $files[$this->GetId()]; // <- My assumption is that $_FILES contains correct structure and therefore array is complete. Am i wrong? 1 + 1 = 2!
+            // Check that _data is valid
+            if (isset($this->_data) && $this->_data['error'] === 0) {
+                // Validate errors
+
+                if (strpos($this->GetOptionValue('allowed'), lisefd_FileUpload::_ext($this->_data['name'])) === FALSE) {
+                    $errors[] = $this->ModLang('error_bad_extension') . ' (' . $this->GetName() . ')';
+                }
+
+                $_size = 1024 * 1024 * $this->GetOptionValue('size');
+                if ($this->_data['size'] > $_size) {
+                    $errors[] = $this->ModLang('error_bad_size') . ' (' . $this->GetName() . ') > ' . $_size . ' (KB) = ' . $this->GetOptionValue('size') . ' (MB)';
+                }
+
+                //+Lee
+                $db = cmsms()->GetDb();
+                $mact = strtolower(explode(",", $_POST['mact'])[0]);
+                $query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = '" . cms_db_prefix() . "module_" . $mact . "_item' AND table_schema = DATABASE()";
+                $item_id = ($this->GetParentItem()->item_id == -1) ? $db->GetOne($query) : $this->GetParentItem()->item_id;
+                $name = $this->_data['name'];
+                $ext = end((explode(".", $name))); # extra () to prevent notice
+                $filename = $item_id . "_" . substr(md5($item_id), 0, 10) . '.' . $ext;
+
+                // Set Value from _data
+                if (empty($errors)) {
+                    $this->SetValue($filename);
+                }
+            }
+        }
+
+        parent::ItemSavePreProcess($errors, $params);
+    }
+
+    public function ItemSavePostProcess(&$errors, &$params) {
+        // Move file to correct place, nothing else.
+        if (isset($this->_data) && $this->_data['error'] === 0) {
+
+            // Get file path
+            $path = $this->GetImagePath();
+
+            // Assure directory exists
+            if (!is_dir($path))
+                @mkdir($path, 0777, true);
+            // Merge filename into path
+            $path = cms_join_path($path, $this->GetValue());
+            // Execute move.
+            if (!move_uploaded_file($this->_data['tmp_name'], $path)) {
+                $errors[] = $this->ModLang('error_file_permissions');
+            }
+        }
+    }
+
+    #---------------------
+    # Private methods
+    #---------------------	
+
+    private static function _diverse_array($vector) {
+        $result = array();
+
+        if (is_array($vector)) {
+            foreach ($vector as $key1 => $value1) {
+                foreach ($value1 as $key2 => $value2) {
+                    $result[$key2][$key1] = $value2;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+}
+
+// end of class
 ?>	

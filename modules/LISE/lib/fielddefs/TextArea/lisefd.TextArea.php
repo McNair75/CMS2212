@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -53,36 +54,34 @@
 #-------------------------------------------------------------------------
 # END_LICENSE
 #-------------------------------------------------------------------------
-class lisefd_TextArea extends LISEFielddefBase
-{
-	public function __construct(&$db_info) 
-	{	
-		parent::__construct($db_info);
-		
-		$this->SetFriendlyType( $this->ModLang( 'fielddef_' . $this->GetType() ) );
-	}
-	
-	public function Validate(&$errors)
-	{
-		if (strlen($this->GetValue("string")) > $this->GetOptionValue('max_length', 6000) && $this->GetOptionValue('max_length')) {
-		
-			$errors[] = $this->ModLang('too_long') . ' (' . $this->GetName() . ')';
-		}		
-	
-		parent::Validate($errors);
-	}
-		
-	public function GetInput($id)
-	{
-		$mod = $this->GetModuleInstance();
-		
-		return $mod->CreateTextArea($this->GetOptionValue('wysiwyg'), $id, $this->GetValue("string"), 'customfield['.$this->GetId().']');
-	}
-  
-  public function GetOptions() 
-  {
-    $this->_opts['search_index'] = $this->GetOptionValue('search_index', FALSE);
-  }  
-	
-} // end of class
+
+class lisefd_TextArea extends LISEFielddefBase {
+
+    public function __construct(&$db_info) {
+        parent::__construct($db_info);
+
+        $this->SetFriendlyType($this->ModLang('fielddef_' . $this->GetType()));
+    }
+
+    public function Validate(&$errors) {
+        if (strlen($this->GetValue("string")) > $this->GetOptionValue('max_length', 6000) && $this->GetOptionValue('max_length')) {
+
+            $errors[] = $this->ModLang('too_long') . ' (' . $this->GetName() . ')';
+        }
+
+        parent::Validate($errors);
+    }
+
+    public function GetInput($id) {
+        $mod = $this->GetModuleInstance();
+        return $mod->CreateTextArea($this->GetOptionValue('wysiwyg'), $id, $this->GetValue("string"), 'customfield[' . $this->GetId() . ']');
+    }
+
+    public function GetOptions() {
+        $this->_opts['search_index'] = $this->GetOptionValue('search_index', FALSE);
+    }
+
+}
+
+// end of class
 ?>

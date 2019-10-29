@@ -1,4 +1,5 @@
 <?php
+
 $lang['invalid_characters'] = 'Zeichen wie „%s“ sind nicht erlaubt mit dem Feld „%s“';
 $lang['green'] = 'grün';
 $lang['yellow'] = 'gelb';

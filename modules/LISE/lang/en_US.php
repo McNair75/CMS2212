@@ -1,72 +1,54 @@
 <?php
-#-------------------------------------------------------------------------
-# LISE - List It Special Edition
-# Version 1.2
-# A fork of ListI2
-# maintained by Fernando Morgado AKA Jo Morg
-# since 2015
-#-------------------------------------------------------------------------
-#
-# Original Author: Ben Malen, <ben@conceptfactory.com.au>
-# Co-Maintainer: Simon Radford, <simon@conceptfactory.com.au>
-# Web: www.conceptfactory.com.au
-#
-#-------------------------------------------------------------------------
-#
-# Maintainer since 2011 up to 2014: Jonathan Schmid, <hi@jonathanschmid.de>
-# Web: www.jonathanschmid.de
-#
-#-------------------------------------------------------------------------
-#
-# Some wackos started destroying stuff since 2012 and stopped at 2014:
-#
-# Tapio Löytty, <tapsa@orange-media.fi>
-# Web: www.orange-media.fi
-#
-# Goran Ilic, <uniqu3e@gmail.com>
-# Web: www.ich-mach-das.at
-#
-#-------------------------------------------------------------------------
-#
-# LISE is a CMS Made Simple module that enables the web developer to create
-# multiple lists throughout a site. It can be duplicated and given friendly
-# names for easier client maintenance.
-#
-#-------------------------------------------------------------------------
-# BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# This file is part of LISE
-# LISE program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# LISE program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-# Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
-#
-#-------------------------------------------------------------------------
-# END_LICENSE
-#-------------------------------------------------------------------------
 
 /* --- do not edit ------------------------------------------------------ */
 /* Only necessary in the English lang file, because it's always loaded first, even if English is not the user's language.
-*/
+ */
 $module_name = '';
-if( isset($modinstance) && is_object($modinstance) ) $module_name = $modinstance->GetName();
+if (isset($modinstance) && is_object($modinstance)) {
+    $module_name = $modinstance->GetName();
+}
 
 /* -- end of do not edit ------------------------------------------------ */
-
 // global
 $lang['invalid_characters'] = 'Characters, such: %s not allowed with field: %s';
 $lang['green'] = 'Green';
+$lang['brand'] = 'Brand';
 $lang['yellow'] = 'Yellow';
 $lang['red'] = 'Red';
+$lang['valid_maps'] = 'Valid Maps';
+$lang['maps'] = 'Maps Options';
+$lang['category'] = 'Category';
+$lang['prompt_category_enabled_wysiwyg'] = 'Enable WYSIWYG';
+$lang['prompt_category_noparent'] = 'Disable Parent in Category List';
+$lang['prompt_maps'] = 'Allow system to Maps';
+$lang['prompt_domains'] = 'Domain Section';
+$lang['icon'] = 'Icon';
+$lang['picture_upload'] = 'Picture';
+$lang['set_popular'] = 'Popular';
+$lang['desc'] = 'Description';
+$lang['sent'] = 'Sent';
+$lang['published'] = 'Published';
+$lang['warning'] = 'Warning to Publish';
+$lang['sent_email'] = 'Sent Email';
+$lang['prompt_sent_email'] = 'Allow system to Sent Email';
+
+$lang['icon_upload'] = 'Icon';
+
+$lang['time_control'] = 'Active Time Control';
+$lang['prompt_time_control'] = 'Allow system to Active Time Control';
+
+$lang['extra1_enabled'] = 'Enabled Extra1';
+$lang['prompt_extra1_enabled'] = 'Allow system to Enabled Extra 1';
+$lang['prompt_extra1_enabled_wysiwyg'] = 'Enable WYSIWYG';
+$lang['extra2_enabled'] = 'Enabled Extra2';
+$lang['prompt_extra2_enabled'] = 'Allow system to Enabled Extra 2';
+$lang['prompt_extra2_enabled_wysiwyg'] = 'Enable WYSIWYG';
+$lang['extra3_enabled'] = 'Enabled Extra3';
+$lang['prompt_extra3_enabled'] = 'Allow system to Enabled Extra 3';
+$lang['prompt_extra3_enabled_wysiwyg'] = 'Enable WYSIWYG';
+
+$lang['sync_languages'] = 'Sync';
+$lang['sync'] = 'Sync';
 
 // tabs
 $lang['item'] = 'Item';
@@ -78,7 +60,7 @@ $lang['templates'] = 'Templates';
 $lang['category'] = 'Category';
 $lang['categories'] = 'Categories';
 $lang['option'] = 'Option';
-$lang['options'] = 'Options';
+$lang['options'] = 'General Options';
 $lang['maintenance'] = 'Maintenance';
 $lang['back'] = 'Go one page back';
 $lang['about'] = 'About';
@@ -90,6 +72,9 @@ $lang['message_fielddefs_fixed'] = 'Field Definitions on all instances repaired.
 $lang['message_instances_copied'] = 'All instances have been cloned.';
 
 // items
+$lang['help_fieldid'] = 'Field ID';
+$lang['help_fieldalias'] = 'Field Alias';
+$lang['help_fieldval'] = '<strong>fieldval</strong> is combined with <strong>fieldid</strong> or <strong>fieldalias</strong> (fieldid=1 fieldval="ABC" or fieldid=\'alias\' fieldval="abc")';
 $lang['item_title'] = 'Title';
 $lang['prompt_item_title'] = 'Item title';
 $lang['prompt_of'] = 'of';
@@ -100,10 +85,14 @@ $lang['time_control'] = 'Use time control';
 $lang['start_time'] = 'Start time';
 $lang['end_time'] = 'End time';
 $lang['item_title_empty'] = 'Item title is empty';
+$lang['alias_empty'] = 'Alias is empty';
 $lang['required_field_empty'] = 'Required field is empty';
+$lang['map_field_empty'] = 'Map field is empty';
 $lang['too_long'] = 'Field value exceeds max length';
 $lang['approve'] = 'Set Status to \'Active\'';
 $lang['revert'] = 'Set Status to \'Inactive\'';
+$lang['popular_on'] = 'Set Popular to \'Active\'';
+$lang['popular_off'] = 'Set Popular to \'Inactive\'';
 $lang['toggle_status'] = 'Toggle Status';
 $lang['select_item'] = 'Select item';
 $lang['submit_order'] = 'Save order';
@@ -136,7 +125,6 @@ $lang['main_settings'] = 'Main Settings';
 $lang['editfielddef'] = 'Edit Field Definition';
 $lang['fielddef_name'] = 'Name';
 $lang['fielddef_help'] = 'Helpful tip';
-$lang['fielddef_type'] = 'Type';
 $lang['fielddef_deps'] = 'Module Dependencies';
 $lang['fielddef_deps_missing'] = 'One or more module dependencies are missing. Please install all required modules to start using this field.';
 $lang['fielddef_scan'] = 'Scan Field Definitions';
@@ -146,14 +134,18 @@ $lang['fielddef_friendlytype'] = 'Friendly Type';
 $lang['fielddef_originator'] = 'Originator';
 $lang['fielddef_max_length'] = 'Maximum length';
 $lang['fielddef_required'] = 'Required';
+$lang['fielddef_map'] = 'Map';
 $lang['registered_fielddefs'] = 'Registered Field Definitions';
 $lang['fielddef_name_empty'] = 'Field definition name is empty';
 $lang['fielddef_name_exists'] = 'Field definition name already exists';
 $lang['fielddef_alias_exists'] = 'Field definition alias already exists. Alias must be unique.';
 $lang['fielddef_is_unique'] = 'Field definition is unique, you can\'t have more than one of these.';
 $lang['fielddef_image'] = 'Expected to be image';
+$lang['fielddef_CoreFilePicker'] = 'Core File Picker';
 $lang['invalid'] = 'Field value is invalid';
 $lang['status_required'] = 'Set status to \'required\'';
+$lang['status_map_on'] = 'Set on to \'Categories\'';
+$lang['status_map_off'] = 'Set off to \'Items\'';
 $lang['status_optional'] = 'Set status to \'optional\'';
 $lang['is_default'] = 'Is set to \'Default\'';
 $lang['status_default'] = 'Set to \'Default\'';
@@ -166,7 +158,6 @@ $lang['warning_reindex_search_now'] = 'Please note this can be slow, depending o
 $lang['warning_reindex_search'] = 'Please note that while this module was not designed to support a large number of items, it has been known to be used, in certain server configurations, with tens of thousands of records together with a high number of custom fields per instance all with a reasonable performance. As such please be advised that indexing this module with the search module can only be effective with items in the order of the hundreds of records, not thousands. If you plan to use a huge number records, keep in mind that the indexing and the search itself can be slow to the extreme of being unusable, so you should stick to the module own search feature as it is optimized for these cases.';
 
 // fields deffs
-
 // TextInput
 $lang['fielddef_TextInput'] = 'Text Input';
 // CheckBox
@@ -196,6 +187,8 @@ $lang['fielddef_MultiSelect'] = 'Multi Select';
 $lang['fielddef_CheckboxGroup'] = 'Checkbox Group';
 // File Upload
 $lang['fielddef_FileUpload'] = 'File Upload';
+// File Upload Multiples
+$lang['fielddef_FileUploadMultiple'] = 'File Upload Multiples';
 // Color Picker
 $lang['fielddef_ColorPicker'] = 'Color Picker';
 // Tags
@@ -203,7 +196,7 @@ $lang['fielddef_Tags'] = 'Tags';
 // Tabs
 $lang['fielddef_Tabs'] = 'Tab';
 
-# BackendText
+// BackendText
 $lang['fielddef_BackendText'] = 'Backend Text';
 $lang['fielddef_BT_container_div'] = 'Container DIV Type';
 $lang['fielddef_BT_container_div_help'] = 'These are CMSMS core backend css styles';
@@ -212,15 +205,27 @@ $lang['fielddef_BT_container_text_help'] = 'The text to display on the backend';
 $lang['fielddef_BT_information'] = 'Information';
 $lang['fielddef_BT_warning'] = 'Warning';
 
-# FEUDropdown
+// ColorList
+$lang['reorder_colorlist'] = 'Reorder Color List';
+$lang['color'] = 'Color';
+$lang['color_code'] = 'Code';
+$lang['edit_color'] = 'Edit Color';
+$lang['color_list'] = 'Color List';
+$lang['color_name'] = 'Color Name';
+$lang['color_description'] = 'Color Description';
+$lang['color_name_empty'] = 'Color Name is Empty';
+$lang['add_color'] = 'Add Color';
+$lang['fielddef_ColorList'] = 'ColorList';
+
+// FEUDropdown
 $lang['fielddef_FEUDropdown'] = 'FrontEndUsers Dropdown';
 $lang['fielddef_feu_options'] = 'FEU Groups';
 $lang['fielddef_feu_dropdown_help'] = 'Please select one of available FrontEndUsers Groups';
 
-# GalleryDropdown
+// GalleryDropdown
 $lang['fielddef_GalleryDropdown'] = 'Gallery Dropdown';
 
-# GBFilePicker
+// GBFilePicker
 $lang['fielddef_GBFilePicker'] = 'GBFilePicker Upload File';
 $lang['fielddef_GBFilePicker_filebrowser'] = 'Enable Filebrowser';
 $lang['fielddef_GBFilePicker_image'] = 'Expected to be image';
@@ -237,7 +242,7 @@ $lang['fielddef_GBFP_delete_help'] = 'If enabled you can grant deleting files or
 $lang['fielddef_GBFP_create_dirs_help'] = 'If enabled you can grant creation of directories for this field even to users without appropriate permission.';
 $lang['fielddef_GBFP_show_subdirs_help'] = 'If enabled user may browse subdirectories.';
 
-# JMFilePicker
+// JMFilePicker
 $lang['fielddef_JMFilePicker'] = 'JMFilePicker Upload File';
 $lang['fielddef_JMFilePicker_filebrowser'] = 'Enable Filebrowser';
 $lang['fielddef_JMFilePicker_image'] = 'Expected to be image';
@@ -254,7 +259,7 @@ $lang['fielddef_JMFP_delete_help'] = 'If enabled you can grant deleting files or
 $lang['fielddef_JMFP_create_dirs_help'] = 'If enabled you can grant creation of directories for this field even to users without appropriate permission.';
 $lang['fielddef_JMFP_show_subdirs_help'] = 'If enabled user may browse subdirectories.';
 
-# ColorPicker
+// ColorPicker
 $lang['fielddef_ColorPicker'] = 'Color Picker';
 
 // CustomFromUDT
@@ -277,7 +282,6 @@ $lang['fielddef_instance_help'] = 'Select instance';
 $lang['fielddef_identifier_help'] = 'Select database identifier';
 $lang['instance'] = 'Instance';
 $lang['identifier'] = 'Identifier';
-
 
 //FEUMultiSelect
 $lang['fielddef_FEUMultiSelect'] = 'FEU Multi Select';
@@ -351,6 +355,8 @@ $lang['template_name'] = 'Template name';
 $lang['template_name_empty'] = 'Template name is empty';
 $lang['template_content_empty'] = 'Template content is empty';
 $lang['default_templates'] = 'Default templates';
+$lang['emailtemplate'] = 'Email Template';
+$lang['emailtemplates'] = 'Email Templates';
 
 // options
 $lang['module_options'] = 'Module Options';
@@ -368,8 +374,11 @@ $lang['prompt_url_template'] = 'URL Template';
 $lang['prompt_display_inline'] = 'Display details inline (replaces module tag instead of {content})';
 $lang['prompt_subcategory'] = 'Enable subcategory option, will show inherited items in category and its children';
 $lang['prompt_item_cols'] = 'Display these fields in item overview';
+$lang['prompt_item_allow_sametitle'] = '<font color=red>[items] Allow Title with same name?</font>';
+$lang['prompt_category_allow_sametitle'] = '<font color=blue>[categories] Allow Title with same name?</font>';
 $lang['prompt_items_per_page'] = 'Display items per page';
 $lang['prompt_create_date'] = 'Display item created date in Item edit mode?';
+$lang['prompt_sortable'] = 'Items List can be sort by Drag?';
 $lang['prompt_detailpage'] = 'Detail page';
 $lang['prompt_summarypage'] = 'Summary page';
 $lang['prompt_reindex_search'] = 'Items searchable by Search module';
@@ -385,15 +394,19 @@ $lang['prompt_auto_upgrade'] = 'Allow system to upgrade this instance automatica
 // instances
 $lang['notice'] = 'Notice';
 $lang['instances'] = 'Instances';
+$lang['modules'] = 'Other Modules';
 $lang['installed_instances_warning'] = 'Below is a list of duplicated module instances.<br />Make sure to backup your site (Database and Files) before "update" action';
 $lang['clone_instances_warning'] = 'All settings will be copied except for permissions which will have to be set manually.';
 $lang['installed_instances'] = 'Installed instances';
+$lang['installed_modules'] = 'Installed modules';
+$lang['duplicate_table'] = '(*) Require: Duplicate table cms_module_lise_instances = cms_module_lise_modules';
+$lang['duplicate_button'] = 'Verify';
 $lang['instance_name'] = 'Instance name';
 $lang['instance_friendlyname'] = 'Friendly name';
 $lang['instance_smarty'] = 'Smarty tag';
 $lang['instance_version'] = 'Version';
 $lang['instance_upgrade'] = 'Upgrade';
-$lang['instance_uptodate'] = 'Up to date';
+$lang['instance_uptodate'] = 'Up';
 $lang['instance_moduleupgraded'] = 'Module upgraded';
 //$lang['duplicate_instance'] = 'Duplicate module';
 //$lang['duplicate_description'] = $module_name . ' can be easily duplicated to multiple module instances with duplicate button.<br /> Install newly copied module from "Extensions &raquo; Modules".';
@@ -448,7 +461,7 @@ $lang['module_name_empty'] = 'Module name is empty';
 $lang['module_name_invalid'] = 'Module name contains invalid characters';
 $lang['modulecopied'] = 'Module copied successfully';
 $lang['select_one'] = 'Select One';
-$lang['size'] = 'Size';
+$lang['size'] = 'Size (MB)';
 $lang['max_length'] = 'Max Length';
 $lang['wysiwyg'] = 'WYSIWYG';
 $lang['date_format'] = 'Date Format';
@@ -460,6 +473,7 @@ $lang['exclude_prefix'] = 'Exclude prefix';
 $lang['image'] = 'Image';
 $lang['file'] = 'File';
 $lang['required'] = 'Required';
+$lang['map'] = 'Map';
 $lang['ascending'] = 'Ascending';
 $lang['descending'] = 'Descending';
 $lang['extra'] = 'Extra';
@@ -487,6 +501,7 @@ $lang['file_alias'] = 'File header/alias';
 // errors
 $lang['error_optionrequired'] = 'Option %s is required';
 $lang['error_bad_extension'] = 'File you trying to upload has bad extension';
+$lang['error_bad_size'] = 'The File is too Big';
 $lang['error_file_permissions'] = 'There was problem with file permissions';
 $lang['error_file_empty'] = 'No file given';
 $lang['error_file_nocsv'] = 'File is not CSV file';
@@ -506,44 +521,44 @@ $lang['eventdesc_PreItemLoad'] = 'Sent before item load process begins. Possible
 $lang['eventdesc_PostItemLoad'] = 'Sent after item load process has completed. Possible to manipulate item object data.';
 $lang['eventdesc_PreRenderAction'] = 'Sent on action execute. Possible to manipulate item query data.';
 
-#Event help
-$lang['eventhelp_PreItemSave'] = "<p>".$lang['eventdesc_PreItemSave']."</p>
+//Event help
+$lang['eventhelp_PreItemSave'] = '<p>' . $lang['eventdesc_PreItemSave'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PostItemSave'] = "<p>".$lang['eventdesc_PostItemSave']."</p>
+$lang['eventhelp_PostItemSave'] = '<p>' . $lang['eventdesc_PostItemSave'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PreItemDelete'] = "<p>".$lang['eventdesc_PreItemDelete']."</p>
+$lang['eventhelp_PreItemDelete'] = '<p>' . $lang['eventdesc_PreItemDelete'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PostItemDelete'] = "<p>".$lang['eventdesc_PostItemDelete']."</p>
+$lang['eventhelp_PostItemDelete'] = '<p>' . $lang['eventdesc_PostItemDelete'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PreItemLoad'] = "<p>".$lang['eventdesc_PreItemLoad']."</p>
+$lang['eventhelp_PreItemLoad'] = '<p>' . $lang['eventdesc_PreItemLoad'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PostItemLoad'] = "<p>".$lang['eventdesc_PostItemLoad']."</p>
+$lang['eventhelp_PostItemLoad'] = '<p>' . $lang['eventdesc_PostItemLoad'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'item_object' - Reference to affected item object.</li>
 </ul>";
 
-$lang['eventhelp_PreRenderAction'] = "<p>".$lang['eventdesc_PreRenderAction']."</p>
+$lang['eventhelp_PreRenderAction'] = '<p>' . $lang['eventdesc_PreRenderAction'] . "</p>
 <h4>Parameters</h4>
 <ul>
 <li>'action_name' - Name of executed action.</li>
@@ -554,6 +569,9 @@ $lang['eventhelp_PreRenderAction'] = "<p>".$lang['eventdesc_PreRenderAction']."<
 $lang['moddescription'] = 'LISE allows you to create lists that you can display throughout your website.';
 $lang['postinstall'] = $module_name . ' has successfully been installed';
 $lang['postuninstall'] = $module_name . ' has successfully been uninstalled';
+$lang['duplicated'] = 'Table has successfully been duplicated';
+$lang['scan_moduled'] = 'Modules has successfully been scaned';
+$lang['scan_modules'] = 'Scan Modules';
 
 // module help
 $lang['general'] = 'General';
@@ -708,7 +726,6 @@ $lang['help_duplicating'] = '<h3>Creating Module Instances</h3>
     To change the icon, replace /modules/LISENameOfDuplicate/images/icon.gif.<br />
     To change Admin section of the module, simply select appropriate section from Dropdown. Make sure you clear the cache after these changes.</p>';
 
-
 $lang['help_smarty_plugins'] = '
 	<h4>What does this do?</h4>
 	 <p>This plugin allows you to load LISE item and category object by certain criteria, anywhere in the system.</p>
@@ -743,7 +760,7 @@ $lang['help_param_action'] = '
         <li>&quot;default&quot; - displays the summary view.</li>
         <li>&quot;detail&quot; - displays a specified entry in detail mode.</li>
         <li>&quot;search&quot; - displays the search form. Optional parameters that affect to this action only: <em>filter.</em></li>
-        <li>&quot;category&quot; - displays the categories. Optional parameters that affect to this action only: <em>show_items, collapse, number_of_levels.</em></li>
+        <li>&quot;category&quot; - displays the categories. Optional parameters that affect to this action only: <em>popular, alias, show_items, collapse, number_of_levels.</em></li>
         <li>&quot;archive&quot; - displays the archives. </li>
     </ul>';
 $lang['help_param_showall'] = 'Show all items, irrespective of end date.';
@@ -790,6 +807,8 @@ $lang['help_param_filter_order_by'] = 'When filtering in a search action you can
     </ul>';
 //$lang['help_param_returnpage'] = 'Used for filter or search mode only. Page to display search results respectivly filtered items in. Must be a page alias. Used to allow summary to be displayed in a different page than filter / search mask.';
 $lang['help_param_debug'] = 'Enables debug mode, printing out all the objects, arrays, variables available for current action.';
+$lang['help_param_popular'] = 'Applies only to action: <em>category</em>. Toggle collapse categories.';
+$lang['help_param_alias'] = 'Applies only to action: <em>category</em>. Toggle collapse categories.';
 $lang['help_param_collapse'] = 'Applies only to action: <em>category</em>. Toggle collapse categories.';
 $lang['help_param_show_items'] = 'Applies only to action: <em>category</em>. Append items to category tree.';
 $lang['help_param_number_of_levels'] = 'Applies only to action: <em>category</em>. Number of of category levels to show.';
@@ -810,4 +829,3 @@ $lang['00000'] = '%s: Unknown LISE error!';
 $lang['00001'] = '%s: Discrete LISE error: %s!';
 $lang['00002'] = '%s: Discrete LISE Database error: %s!';
 $lang['00010'] = '%s: Attempt to write to configuration; LISE configuration variables are READ ONLY!';
-?>

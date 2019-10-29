@@ -37,29 +37,33 @@ $numrows = $dbresult->NumRows();
 $index = 0;
 while ($dbresult && $row = $dbresult->FetchRow()) {
     $onerow = cge_array::to_object($row);
-
-    $onerow->title = $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $row['name'], array('compid' => $row['id']));
+    $onerow->active = $row["active"];
+    $onerow->synclink = $this->CreateLink($id, 'admin_mlecms_config_synclink', $returnid, $admintheme->DisplayImage('icons/system/sync.png', $this->Lang('delete'), '', '', 'systemicon'), array('compid' => $row['alias']), $this->Lang('areyousure'));
+    if (get_site_preference('default_lang_mle') != $row['locale']){
+        $onerow->title = $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $row['name'], array('compid' => $row['id']));
+    }else{
+        $onerow->title = $row["name"];
+    }
     $onerow->editlink = $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $admintheme->DisplayImage('icons/system/edit.gif', $this->Lang('edit'), '', '', 'systemicon'), array('compid' => $row['id']));
     $onerow->deletelink = $this->CreateLink($id, 'admin_mlecms_config_deletelang', $returnid, $admintheme->DisplayImage('icons/system/delete.gif', $this->Lang('delete'), '', '', 'systemicon'), array('compid' => $row['id']), $this->Lang('areyousure'));
 
-        if ($index > 0) {
-            $onerow->moveuplink = $this->CreateLink($id, 'moveup', $returnid, $admintheme->DisplayImage('icons/system/arrow-u.gif', lang('up'), '', '', 'systemicon'), array('compid' => $row['id']), '', false, false, 'class="itemlink"');
-        }
-        if ($index < $numrows - 1) {
-            $onerow->movedownlink = $this->CreateLink($id, 'movedown', $returnid, $admintheme->DisplayImage('icons/system/arrow-d.gif', lang('down'), '', '', 'systemicon'), array('compid' => $row['id']), '', false, false, 'class="itemlink"');
-        }
+    if ($index > 0) {
+        $onerow->moveuplink = $this->CreateLink($id, 'moveup', $returnid, $admintheme->DisplayImage('icons/system/arrow-u.gif', lang('up'), '', '', 'systemicon'), array('compid' => $row['id']), '', false, false, 'class="itemlink"');
+    }
+    if ($index < $numrows - 1) {
+        $onerow->movedownlink = $this->CreateLink($id, 'movedown', $returnid, $admintheme->DisplayImage('icons/system/arrow-d.gif', lang('down'), '', '', 'systemicon'), array('compid' => $row['id']), '', false, false, 'class="itemlink"');
+    }
 
     $entryarray[] = $onerow;
     $index++;
 }
 
-
-$addlink = $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $this->Lang('add'));
-
-$smarty->assign('addlink', $addlink);
+$smarty->assign('addlink', $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $admintheme->DisplayImage('icons/system/newobject.gif', $this->Lang('add'),'','','systemicon'), array(), '', false, false, '') .' '. $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $this->Lang('add'), array(), '', false, false, 'class="pageoptions"'));
+//$addlink = $this->CreateLink($id, 'admin_mlecms_config_editlang', $returnid, $admintheme->DisplayImage('icons/system/newobject.gif', $this->Lang('addarticle'),'','','systemicon'));
+//$smarty->assign('addlink', $addlink);
 
 $this->smarty->assign_by_ref('items', $entryarray);
-$this->smarty->assign('itemcount', $entryarray ? $entryarray : -1);
+$this->smarty->assign('itemcount', count($entryarray));
 
 echo $this->ProcessTemplate('langs.tpl');
 ?>

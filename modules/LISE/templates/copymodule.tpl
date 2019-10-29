@@ -4,20 +4,25 @@
     <p class="pagetext">* {$mod->ModLang('module_name')}:</p>
     <p class="pageinput">{$input_module_name}</p>
 </div>
-
-{if $autoinstall}
+{if $domain_sections}
 <div class="pageoverflow">
-    <p class="pagetext">* {$mod->ModLang('instance_friendlyname')}:</p>
-    <p class="pageinput">{$input_module_friendlyname}</p>
+    <p class="pagetext">* {$mod->ModLang('prompt_domains')}:</p>
+    <p class="pageinput">{$input_domainsection}</p>
 </div>
-<div class="pageoverflow">
-    <p class="pagetext">{$mod->ModLang('prompt_moddescription')}:</p>
-    <p class="pageinput">{$input_moddescription}</p>
-</div>      
-<div class="pageoverflow">
-    <p class="pagetext">{$mod->ModLang('prompt_adminsection')}:</p>
-    <p class="pageinput">{$input_adminsection}</p>
-</div> 
+{/if}
+{if $autoinstall}
+    <div class="pageoverflow">
+        <p class="pagetext">* {$mod->ModLang('instance_friendlyname')}:</p>
+        <p class="pageinput">{$input_module_friendlyname}</p>
+    </div>
+    <div class="pageoverflow">
+        <p class="pagetext">{$mod->ModLang('prompt_moddescription')}:</p>
+        <p class="pageinput">{$input_moddescription}</p>
+    </div>
+    <div class="pageoverflow">
+        <p class="pagetext">{$mod->ModLang('prompt_adminsection')}:</p>
+        <p class="pageinput">{$input_adminsection}</p>
+    </div> 
 {/if}
 
 <div class="pageoverflow">
@@ -25,4 +30,3 @@
     <p class="pageinput">{$submit}{$cancel}</p>
 </div>
 {$endform}
-
