@@ -1,14 +1,16 @@
 <?php
 
-if (!defined('CMS_VERSION'))
+if (!defined('CMS_VERSION')) {
     exit;
+}
 
 #---------------------
 # Init items
 #---------------------
 
-if (!$this->CheckPermission($this->_GetModuleAlias() . '_modify_option'))
+if (!$this->CheckPermission($this->_GetModuleAlias() . '_modify_option')) {
     return;
+}
 
 $admintheme = cms_utils::get_theme_object();
 $templates = $this->ListTemplates();
@@ -33,7 +35,10 @@ foreach ($templates as $template) {
         $onerow->default = $admintheme->DisplayImage('icons/system/true.gif', $this->ModLang('is_default'), '', '', 'systemicon');
 
         if ($tpl_type != 'filter') // <- For upgrade, so ppl are abel to remove all filter templates after moving stuff to search instance. (1.2.1 -> 1.2.2)
-            unset($onerow->delete); // <- Disable delete button
+        {
+            unset($onerow->delete);
+        }
+        // <- Disable delete button
     } else {
 
         $onerow->default = $this->CreateLink($id, 'admin_setdefaulttemplate', $returnid, $admintheme->DisplayImage('icons/system/false.gif', $this->ModLang('status_default'), '', '', 'systemicon'), array('name' => $template));
@@ -41,8 +46,10 @@ foreach ($templates as $template) {
 
     $items[$tpl_type][] = $onerow;
 
-    if (!isset($addlinks[$tpl_type]))
+    if (!isset($addlinks[$tpl_type])) {
         $addlinks[$tpl_type] = $this->CreateLink($id, 'admin_edittemplate', $returnid, $admintheme->DisplayImage('icons/system/newobject.gif', $this->ModLang('add', $this->ModLang($tpl_type . 'template')), '', '', 'systemicon') . $this->ModLang('add', $this->ModLang($tpl_type . 'template')), array('type' => $tpl_type));
+    }
+
 }
 
 ksort($items);
@@ -55,3 +62,4 @@ $smarty->assign('items', $items);
 $smarty->assign('addlinks', $addlinks);
 
 echo $this->ModProcessTemplate('templatetab.tpl');
+?>

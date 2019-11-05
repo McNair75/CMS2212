@@ -37,7 +37,7 @@ if (!function_exists('smarty_mb_str_replace')) {
                 }
             } else {
                 $n = max(count($search), count($replace));
-                while ($n --) {
+                while ($n--) {
                     $subject = smarty_mb_str_replace(current($search), current($replace), $subject, $c);
                     $count += $c;
                     next($search);

@@ -107,8 +107,8 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             // Note that the UTF-8 encoded character ä will be represented as %c3%a4
             $return = '';
             $_length = strlen($string);
-            for ($x = 0; $x < $_length; $x ++) {
-                $return .= '%' . bin2hex($string[ $x ]);
+            for ($x = 0; $x < $_length; $x++) {
+                $return .= '%' . bin2hex($string[$x]);
             }
 
             return $return;
@@ -128,8 +128,8 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             }
             // no MBString fallback
             $_length = strlen($string);
-            for ($x = 0; $x < $_length; $x ++) {
-                $return .= '&#x' . bin2hex($string[ $x ]) . ';';
+            for ($x = 0; $x < $_length; $x++) {
+                $return .= '&#x' . bin2hex($string[$x]) . ';';
             }
 
             return $return;
@@ -149,16 +149,18 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             }
             // no MBString fallback
             $_length = strlen($string);
-            for ($x = 0; $x < $_length; $x ++) {
-                $return .= '&#' . ord($string[ $x ]) . ';';
+            for ($x = 0; $x < $_length; $x++) {
+                $return .= '&#' . ord($string[$x]) . ';';
             }
 
             return $return;
 
         case 'javascript':
             // escape quotes and backslashes, newlines, etc.
-            return strtr($string, array('\\' => '\\\\', "'" => "\\'", '"' => '\\"', "\r" => '\\r', "\n" => '\\n',
-                                        '</' => '<\/'));
+            return strtr($string, array(
+                '\\' => '\\\\', "'" => "\\'", '"' => '\\"', "\r" => '\\r', "\n" => '\\n',
+                '</' => '<\/'
+            ));
 
         case 'mail':
             if (Smarty::$_MBSTRING) {
@@ -189,7 +191,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             }
 
             $_length = strlen($string);
-            for ($_i = 0; $_i < $_length; $_i ++) {
+            for ($_i = 0; $_i < $_length; $_i++) {
                 $_ord = ord(substr($string, $_i, 1));
                 // non-standard char, escape it
                 if ($_ord >= 126) {

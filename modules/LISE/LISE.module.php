@@ -419,7 +419,7 @@ INNER JOIN cms_modules AS m ON i.module_name = m.module_name';
     public function LoadModuleHints(&$params) {
         $this->use_hints = cms_utils::get_app_data('__MODULE_HINT__' . $this->GetName());
 
-        if (count($this->use_hints) > 0) {
+        if ($this->use_hints && count($this->use_hints) > 0) {
             foreach ((array) $this->use_hints as $key => $value) {
                 if (isset($params[$key])) {
                     continue;

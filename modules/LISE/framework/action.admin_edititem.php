@@ -198,7 +198,7 @@ if (isset($params['submit']) || isset($params['apply']) || isset($params['save_c
         $obj->key3 = $key3;
         $obj->owner = ($loggedin) ? $loggedin : -1;
         $obj->domain_id = $domain_id;
-        //$obj->categories	= $categories;
+        //$obj->categories    = $categories;
         //$obj->category_id = $category_id;
         // Save item to database
         $this->SaveItem($obj, $mleblock);
@@ -255,8 +255,8 @@ elseif ($obj->item_id > 0 || $mode == 'copy') {
     if (!empty($start_time) || !empty($end_time)) {
         $time_control = 1;
     }
-    //$categories	= $obj->categories;
-    //$category_id 	= $obj->category_id;
+    //$categories    = $obj->categories;
+    //$category_id     = $obj->category_id;
 }
 
 //---------------------
@@ -301,17 +301,21 @@ $smarty->assign('ajax_get_url', $ajax_url1);
 $smarty->assign('ajax_get_alias', $ajax_url2);
 
 $mod_maps = cge_utils::get_module('CGGoogleMaps2');
-$smarty->assign('maps_key', $mod_maps->GetPreference('apikey'));
+if ($mod_maps) {
+    $smarty->assign('maps_key', $mod_maps->GetPreference('apikey'));
+}
 
 $ajax_url3 = $this->create_url($id, 'getgeocode', $returnid);
 $smarty->assign('ajax_getgeocode', $ajax_url3);
 
 $maps_turn = $this->GetPreference('maps');
-$smarty->assign('search_text', $this->GetPreference('search_text'));
-$smarty->assign('formatted_address', $this->GetPreference('formatted_address'));
-$smarty->assign('lat', $this->GetPreference('latitude'));
-$smarty->assign('lng', $this->GetPreference('longitude'));
-$smarty->assign('maps_turn', $maps_turn);
+if ($maps_turn) {
+    $smarty->assign('search_text', $this->GetPreference('search_text'));
+    $smarty->assign('formatted_address', $this->GetPreference('formatted_address'));
+    $smarty->assign('lat', $this->GetPreference('latitude'));
+    $smarty->assign('lng', $this->GetPreference('longitude'));
+    $smarty->assign('maps_turn', $maps_turn);
+}
 
 $smarty->assign('valid_maps', '<input type="button" name="valid" value="' . $this->ModLang('valid_maps') . '" class="pagebutton valid_maps" />');
 
@@ -362,8 +366,6 @@ if (isset($language_status)) {
     $smarty->assign('activelang', $language_status);
 }
 //Status: End Active Languages
-
-
 
 if ($this->CheckPermission($this->_GetModuleAlias() . '_approve_item')) {
     $smarty->assign('input_active', $this->CreateInputcheckbox($id, 'active', 1, $active));

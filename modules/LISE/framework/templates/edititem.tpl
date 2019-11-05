@@ -15,7 +15,7 @@
     <div id="edititem">
         {$title}
     </div>
-    {if count($itemObject)}
+    {if is_array($itemObject) && count($itemObject)}
         {foreach from=$itemObject->fielddefs item='fielddef'}
             {if $fielddef->type === 'Tabs'}
                 {$fielddef->displayTabHeader()}
@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        {if count($itemObject)}
+        {if is_array($itemObject) && count($itemObject)}
             {foreach from=$itemObject->fielddefs item='fielddef'}
                 {$fielddef->RenderInput($actionid, $returnid)}
             {/foreach}

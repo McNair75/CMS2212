@@ -25,7 +25,7 @@ if (!function_exists('smarty_mb_wordwrap')) {
     {
         // break words into tokens using white space as a delimiter
         $tokens =
-            preg_split('!(\s)!S' . Smarty::$_UTF8_MODIFIER, $str, - 1, PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE);
+            preg_split('!(\s)!S' . Smarty::$_UTF8_MODIFIER, $str, -1, PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE);
         $length = 0;
         $t = '';
         $_previous = false;
@@ -36,8 +36,12 @@ if (!function_exists('smarty_mb_wordwrap')) {
             $_tokens = array($_token);
             if ($token_length > $width) {
                 if ($cut) {
-                    $_tokens = preg_split('!(.{' . $width . '})!S' . Smarty::$_UTF8_MODIFIER, $_token, - 1,
-                                          PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE);
+                    $_tokens = preg_split(
+                        '!(.{' . $width . '})!S' . Smarty::$_UTF8_MODIFIER,
+                        $_token,
+                        -1,
+                        PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE
+                    );
                 }
             }
 
@@ -49,7 +53,7 @@ if (!function_exists('smarty_mb_wordwrap')) {
                 if ($length > $width) {
                     // remove space before inserted break
                     if ($_previous) {
-                        $t = mb_substr($t, 0, - 1, Smarty::$_CHARSET);
+                        $t = mb_substr($t, 0, -1, Smarty::$_CHARSET);
                     }
 
                     if (!$_space) {
