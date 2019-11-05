@@ -69,8 +69,8 @@
                 <th class="pageicon" style="width:50px;">{$mod->Lang('active')}</th>
                 <th class="pageicon" style="width:50px;"></th>
                 <th class="pageicon" style="width:50px;"></th>
-{*                <th class="pageicon" style="width:50px;"></th>*}
-{*                <th class="pageicon" style="width:50px;"></th>*}
+               <th class="pageicon" style="width:50px;"></th>
+               <th class="pageicon" style="width:50px;"></th>
                 <th class="pageicon" style="width:30px;"></th>
             </tr>
         </thead>
@@ -103,8 +103,8 @@
                             {if isset($entry->movedownlink)}{$entry->movedownlink}{/if}
                            
                         </td>
-{*                        <td style="text-align:center;">{if $entry->alias != 'en'}<button class="syncdata button_sync" data-alias="{$entry->alias}">Sync</button>{/if}</td>*}
-{*                        <td style="text-align:center;">{if $entry->alias != 'en'}<button class="resetdata button_reset" data-alias="{$entry->alias}">Reset</button>{/if}</td>*}
+                       <td style="text-align:center;">{if $entry->alias != 'en'}<button class="syncdata button_sync" data-alias="{$entry->alias}">Sync</button>{/if}</td>
+                       <td style="text-align:center;">{if $entry->alias != 'en'}<button class="resetdata button_reset" data-alias="{$entry->alias}">Reset</button>{/if}</td>
                         <td style="text-align:center;">{if $entry->alias != 'en'}{$entry->editlink}{/if}</td>
                         <td style="text-align:center;">{if $entry->alias != 'en'}{$entry->deletelink}{/if}</td>
                     </tr>
