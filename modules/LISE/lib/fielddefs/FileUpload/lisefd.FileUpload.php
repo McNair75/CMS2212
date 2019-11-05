@@ -1,4 +1,5 @@
 <?php
+
 #-------------------------------------------------------------------------
 # LISE - List It Special Edition
 # Version 1.2
@@ -54,105 +55,100 @@
 # END_LICENSE
 #-------------------------------------------------------------------------
 
+class lisefd_FileUpload extends LISEFielddefBase {
 
-class lisefd_FileUpload extends LISEFielddefBase
-{
-	private static $_img_types = array('gif', 'jpg', 'jpeg', 'png');
+    private static $_img_types = array('gif', 'jpg', 'jpeg', 'png');
 
-	public function __construct(&$db_info) 
-	{	
-		parent::__construct($db_info);
-		
-		$this->SetFriendlyType($this->ModLang('fielddef_'.$this->GetType()));
-	}
-	
-	#---------------------
-	# Fieldbase methods
-	#---------------------	
+    public function __construct(&$db_info) {
+        parent::__construct($db_info);
 
-	public function RenderForAdminListing($id, $returnid)
-	{
-		// Check if we have value.
-		if(!$this->HasValue())
-			return;
-	
-		// Check if we need image and if extension of filename is actually image.
-		if(!$this->GetOptionValue('image') || !in_array(self::_ext($this->GetValue()), self::$_img_types))
-			return $this->GetValue();
-
-		// Check if CGSmartImage module is installed.
-		$cgsi = cmsms()->GetModuleInstance('CGSmartImage');
-		if(!is_object($cgsi))
-			return $this->GetValue();
-					
-		// Check if our source file is readable.
-        $path = cms_join_path($this->GetImagePath(), $this->GetValue());
-		if(!is_readable($path))
-			return $this->GetValue();
-		
-        $href = $this->GetImagePath(true) .'/'. $this->GetValue();
-	
-		$params['src'] = $href;
-		$params['filter_croptofit'] = '48,48';
-		$params['notag'] = true;
-		$params['noembed'] = true;
-	
-		$output = cgsi_utils::process_image($params);
-		
-		$url = $output['output'];
-		
-		return '<a href="'.$href.'" class="cbox thumb"><img src="'.$url.'" width="48" height="48" /></a>';		
-	}
-  
-  public function FrontEndRender( $params = array() )
-  {
-    if( empty($this->view) )
-    {
-      $smarty = cmsms()->GetSmarty();
-      $smarty->assign('name', $this->name);
-      $smarty->assign('value', $this->value);
-      $smarty->assign('type', $this->type);
-      $smarty->assign('alias', $this->alias);
-      $smarty->assign('params', $params);
-      $smarty->assign('imagepath', $this->GetImagePath(TRUE) );
-      $this->view = $smarty->fetch( 'string:' . $this->GetTemplate() );
+        $this->SetFriendlyType($this->ModLang('fielddef_' . $this->GetType()));
     }
 
-    return $this->view;
-    
-  }	
-	
-	#---------------------
-	# Class methods
-	#---------------------		
-	
-	public function GetImagePath($url = false)
-	{
-		$config = cmsms()->GetConfig();
-		$prefix = $url ? $config['uploads_url'] : $config['uploads_path'];
-		$path = cms_join_path($prefix, $this->GetOptionValue('dir'));		
-	
-		if(strpos($path, '{$item_id}') !== false)			
-			$path = str_replace('{$item_id}', $this->GetItemId(), $path);
-				
-		if(strpos($path, '{$field_id}') !== false)			
-			$path = str_replace('{$field_id}', $this->GetId(), $path);
-				
-		if($url)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+    #---------------------
+    # Fieldbase methods
+    #---------------------	
 
-		return $path;
-	}
+    public function RenderForAdminListing($id, $returnid) {
+        // Check if we have value.
+        if (!$this->HasValue())
+            return;
 
-	#---------------------
-	# Private methods
-	#---------------------	
-	
-	public static function _ext($filename)
-	{	
-		$filename = explode('.', $filename);
-		return trim(strtolower(end($filename))); // <- A bit freaky yes, but should cover all possible cases.
-	}
-	
-} // end of class
+        // Check if we need image and if extension of filename is actually image.
+        if (!$this->GetOptionValue('image') || !in_array(self::_ext($this->GetValue()), self::$_img_types))
+            return $this->GetValue();
+
+        // Check if CGSmartImage module is installed.
+        $cgsi = cmsms()->GetModuleInstance('CGSmartImage');
+        if (!is_object($cgsi))
+            return $this->GetValue();
+
+        // Check if our source file is readable.
+        $path = cms_join_path($this->GetImagePath(), $this->GetValue());
+        if (!is_readable($path))
+            return $this->GetValue();
+
+        $href = $this->GetImagePath(true) . '/' . $this->GetValue();
+
+        $params['src'] = $href;
+        $params['filter_croptofit'] = '48,48';
+        $params['notag'] = true;
+        $params['noembed'] = true;
+        $params['quality'] = '100%';
+
+        $output = cgsi_utils::process_image($params);
+
+        $url = $output['output'];
+
+        return '<a href="' . $href . '" class="cbox thumb"><img src="' . $url . '" width="48" height="48" /></a>';
+    }
+
+    public function FrontEndRender($params = array()) {
+        if (empty($this->view)) {
+            $smarty = cmsms()->GetSmarty();
+            $smarty->assign('name', $this->name);
+            $smarty->assign('value', $this->value);
+            $smarty->assign('type', $this->type);
+            $smarty->assign('alias', $this->alias);
+            $smarty->assign('params', $params);
+            $smarty->assign('imagepath', $this->GetImagePath(TRUE));
+            $this->view = $smarty->fetch('string:' . $this->GetTemplate());
+        }
+
+        return $this->view;
+    }
+
+    #---------------------
+    # Class methods
+    #---------------------		
+
+    public function GetImagePath($url = false) {
+        $config = cmsms()->GetConfig();
+        $prefix = $url ? $config['uploads_url'] : $config['uploads_path'];
+        $path = cms_join_path($prefix, $this->GetOptionValue('dir'));
+
+        if (strpos($path, '{$item_id}') !== false)
+            $path = str_replace('{$item_id}', $this->GetItemId(), $path);
+
+        if (strpos($path, '{$field_id}') !== false)
+            $path = str_replace('{$field_id}', $this->GetId(), $path);
+
+        if ($url)
+            $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+
+        return $path;
+    }
+
+    #---------------------
+    # Private methods
+    #---------------------	
+
+    public static function _ext($filename) {
+        $filename = explode('.', $filename);
+        return trim(strtolower(end($filename))); // <- A bit freaky yes, but should cover all possible cases.
+    }
+
+}
+
+// end of class
 ?>

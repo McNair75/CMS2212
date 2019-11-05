@@ -1,64 +1,12 @@
 <?php
-#-------------------------------------------------------------------------
-# LISE - List It Special Edition
-# Version 1.2
-# A fork of ListI2
-# maintained by Fernando Morgado AKA Jo Morg
-# since 2015
-#-------------------------------------------------------------------------
-#
-# Original Author: Ben Malen, <ben@conceptfactory.com.au>
-# Co-Maintainer: Simon Radford, <simon@conceptfactory.com.au>
-# Web: www.conceptfactory.com.au
-#
-#-------------------------------------------------------------------------
-#
-# Maintainer since 2011 up to 2014: Jonathan Schmid, <hi@jonathanschmid.de>
-# Web: www.jonathanschmid.de
-#
-#-------------------------------------------------------------------------
-#
-# Some wackos started destroying stuff since 2012 and stopped at 2014:
-#
-# Tapio Löytty, <tapsa@orange-media.fi>
-# Web: www.orange-media.fi
-#
-# Goran Ilic, <uniqu3e@gmail.com>
-# Web: www.ich-mach-das.at
-#
-#-------------------------------------------------------------------------
-#
-# LISE is a CMS Made Simple module that enables the web developer to create
-# multiple lists throughout a site. It can be duplicated and given friendly
-# names for easier client maintenance.
-#
-#-------------------------------------------------------------------------
-# BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# This file is part of LISE
-# LISE program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# LISE program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-# Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
-#
-#-------------------------------------------------------------------------
-# END_LICENSE
-#-------------------------------------------------------------------------
-if( !defined('CMS_VERSION') ) exit;
 
+if (!defined('CMS_VERSION')) {
+    exit;
+}
 
-#---------------------
-# Database tables
-#---------------------
+//---------------------
+// Database tables
+//---------------------
 
 $dict = NewDataDictionary($db);
 $taboptarray = array('mysql' => 'Engine=InnoDB');
@@ -68,7 +16,8 @@ $fields = '
             item_id I KEY AUTO,
             url C(255),
             category_id I,
-            title C(255),
+            "`title`" C(255),
+            "`desc`" text,
             alias C(255),
             position I,
             active I4,
@@ -76,14 +25,15 @@ $fields = '
             modified_time DT,
             start_time D,
             end_time D,
-            key1 C(50),
-            key2 C(50),
-            key3 C(50),
-            owner I
+            key1 text,
+            key2 text,
+            key3 text,
+            owner I,
+            domain_id I
 ';
 
 $sqlarray = $dict->CreateTableSQL(cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_item', $fields, $taboptarray);
-$dict->ExecuteSQLArray($sqlarray);
+$abc = $dict->ExecuteSQLArray($sqlarray);
 
 // create category table
 $fields = '
@@ -96,16 +46,55 @@ $fields = '
             hierarchy C(255),
             hierarchy_path C(255),
             id_hierarchy C(255),
+            icon C(100),
+            picture C(100),
             active I4,
+            popular I4,
             create_date DT,
             modified_date DT,
-            key1 C(50),
-            key2 C(50),
-            key3 C(50)
+            key1 text,
+            key2 text,
+            key3 text
 ';
 
 $sqlarray = $dict->CreateTableSQL(cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_category', $fields, $taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
+
+// create color table
+//$fields = '
+//            color_id I KEY AUTO,
+//            color_name C(255),
+//            color_code C(30),
+//            color_alias C(255),
+//            color_description X,
+//            parent_id I,
+//            position I,
+//            hierarchy C(255),
+//            hierarchy_path C(255),
+//            id_hierarchy C(255),
+//            icon C(100),
+//            picture C(100),
+//            active I4,
+//            popular I4,
+//            create_date DT,
+//            modified_date DT,
+//            key1 text,
+//            key2 text,
+//            key3 text
+//';
+
+//$sqlarray = $dict->CreateTableSQL(cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_color', $fields, $taboptarray);
+//$dict->ExecuteSQLArray($sqlarray); TODO
+
+// create item_colors
+//$fields = '
+//    item_id I KEY NOT NULL DEFAULT \'-1\',
+//    color_id I KEY NOT NULL DEFAULT \'-1\'
+//';
+
+//$sqlarray = $dict->CreateTableSQL(cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_item_colors', $fields, $taboptarray);
+//$dict->ExecuteSQLArray($sqlarray); TODO
+
 
 // create item_categories
 $fields = '
@@ -125,6 +114,7 @@ $fields = '
             type C(50),
             position I,
             required I,
+            map I,
             template C(255),
             extra X
 ';
@@ -154,89 +144,103 @@ $fields = '
 $sqlarray = $dict->CreateTableSQL(cms_db_prefix() . 'module_' . $this->_GetModuleAlias() . '_fieldval', $fields, $taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-#---------------------
-# Templates
-#---------------------	
-	
+//---------------------
+// Templates
+//---------------------
 // Summary templates
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_summary_default.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('summary_default', $template);
-	$this->SetPreference($this->_GetModuleAlias() . '_default_summary_template', 'default');
+    $this->SetTemplate('summary_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_summary_template', 'default');
+}
+
+$fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_summary_sample.tpl');
+if (file_exists($fn)) {
+    $template = @file_get_contents($fn);
+    $this->SetTemplate('summary_sample', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_sample_summary_template', 'sample');
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_summary_categorized.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('summary_categorized', $template);
+    $this->SetTemplate('summary_categorized', $template);
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_summary_accordion.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('summary_accordion', $template);
+    $this->SetTemplate('summary_accordion', $template);
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_summary_searchresults.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('summary_searchresults', $template);
+    $this->SetTemplate('summary_searchresults', $template);
 }
 
 // Detail templates
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_detail_default.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('detail_default', $template);
-	$this->SetPreference($this->_GetModuleAlias() . '_default_detail_template', 'default');
+    $this->SetTemplate('detail_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_detail_template', 'default');
 }
 
 // Search templates
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_search_default.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('search_default', $template);
-	$this->SetPreference($this->_GetModuleAlias() . '_default_search_template', 'default');
+    $this->SetTemplate('search_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_search_template', 'default');
+}
+
+// Email templates
+$fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_email_default.tpl');
+if (file_exists($fn)) {
+    $template = @file_get_contents($fn);
+    $this->SetTemplate('email_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_email_template', 'default');
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_search_filter.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('search_filter', $template);
+    $this->SetTemplate('search_filter', $template);
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_search_multiselect.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('search_multiselect', $template);
+    $this->SetTemplate('search_multiselect', $template);
 }
 
 // Category templates
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_category_default.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('category_default', $template);
-	$this->SetPreference($this->_GetModuleAlias() . '_default_category_template', 'default');
+    $this->SetTemplate('category_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_category_template', 'default');
 }
 
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_category_hierarchy.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('category_hierarchy', $template);
+    $this->SetTemplate('category_hierarchy', $template);
 }
 
 // Archive templates
 $fn = cms_join_path(LISE_TEMPLATE_PATH, 'fe_archive_default.tpl');
-if( file_exists( $fn ) ) {
+if (file_exists($fn)) {
     $template = @file_get_contents($fn);
-	$this->SetTemplate('archive_default', $template);
-	$this->SetPreference($this->_GetModuleAlias() . '_default_archive_template', 'default');
+    $this->SetTemplate('archive_default', $template);
+    $this->SetPreference($this->_GetModuleAlias() . '_default_archive_template', 'default');
 }
 
-#---------------------
-# Preferences
-#---------------------
+//---------------------
+// Preferences
+//---------------------
 
 $this->SetPreference('sortorder', 'ASC');
 $this->SetPreference('adminsection', 'content');
@@ -247,21 +251,22 @@ $this->SetPreference('item_singular', utf8_encode(html_entity_decode($this->ModL
 $this->SetPreference('item_plural', utf8_encode(html_entity_decode($this->ModLang('items'))));
 $this->SetPreference('item_title', utf8_encode(html_entity_decode($this->ModLang('item_title'))));
 //$this->SetPreference($this->_GetModuleAlias() . '_default_category', '1');
-
-#---------------------
-# Permissions
-#---------------------
+//---------------------
+// Permissions
+//---------------------
 
 $this->CreatePermission($this->_GetModuleAlias() . '_modify_item', $this->_GetModuleAlias() . ': Modify Items');
-$this->CreatePermission($this->_GetModuleAlias() . '_modify_category', $this->_GetModuleAlias() . ': Modify Categories');
-$this->CreatePermission($this->_GetModuleAlias() . '_modify_option', $this->_GetModuleAlias() . ': Modify Options');
-$this->CreatePermission($this->_GetModuleAlias() . '_remove_item', $this->_GetModuleAlias() . ': Remove items');
 $this->CreatePermission($this->_GetModuleAlias() . '_approve_item', $this->_GetModuleAlias() . ': Approve items');
 $this->CreatePermission($this->_GetModuleAlias() . '_modify_all_item', $this->_GetModuleAlias() . ': Modify all items');
+$this->CreatePermission($this->_GetModuleAlias() . '_remove_item', $this->_GetModuleAlias() . ': Remove items');
+$this->CreatePermission($this->_GetModuleAlias() . '_modify_category', $this->_GetModuleAlias() . ': Modify Categories');
+//$this->CreatePermission($this->_GetModuleAlias() . '_modify_color', $this->_GetModuleAlias() . ': Modify Colors'); //TODO
+$this->CreatePermission($this->_GetModuleAlias() . '_modify_option', $this->_GetModuleAlias() . ': Modify Options');
 
-#---------------------
-# Events
-#---------------------
+
+//---------------------
+// Events
+//---------------------
 
 $this->CreateEvent('PreItemSave');
 $this->CreateEvent('PostItemSave');

@@ -1,20 +1,10 @@
 <ul>
-    <li>
-        Version 2.0-beta2 - 2019-09-04
+    <li>Version 2.0 - september 2016
         <ul>
-            <li>Bug fixes wrt to admin blocks editing</li>
-            <li>Bug fix in PHP7.2+</li>
-            <li>More to come especially for CMS Made Simple 2.3</li>
-        </ul>
-    </li>
-    <li>Version 2.0 - since sept 2017
-        <ul>
-            <li>CMSMS 2.1.6+ ready</li>
+            <li>CMSMS 2.1.5+ ready</li>
             <li>removed the 'detector' stuff (doesn't work properly with CMSMS 2* for the moment) - you must use {MleCMS action=init} on the top of your page template</li>
             <li>add mle_selflink (mle version of cms_selflink)</li>
             <li>some admin changes</li>
-            <li>now is not lazy loaded anymore in the admin, in order to work properly with 3rd party modules like CGBetterForms
-            <li>bug fixes</li>
         </ul>
     </li>
     

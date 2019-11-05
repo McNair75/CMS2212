@@ -34,14 +34,14 @@ class Translation {
         if (self::$_langs == null)
             self::$_langs = mle_tools::get_langs();
 
-        if (self::$_translations == null) {
-            $translations_file = $config['uploads_path'] . '/translations.dat';
-            if (file_exists($translations_file))
-            {
-                $data = file_get_contents($config['uploads_path'] . '/translations.dat');
-                self::$_translations = unserialize($data);
+            if (self::$_translations == null) {
+                $translations_file = $config['uploads_path'] . '/translations.dat';
+                if (file_exists($translations_file))
+                {
+                    $data = file_get_contents($config['uploads_path'] . '/translations.dat');
+                    self::$_translations = unserialize($data);
+                }
             }
-        }
     }
 
     public static function save() {
@@ -71,6 +71,22 @@ class Translation {
         $value = $post['editValue'];
         self::$_translations[$key][$editLang] = $value;
         self::save();
+    }
+    
+    public static function setDefaultMle($post){
+        self::_init();
+        set_site_preference('default_lang_mle',$post['bvalue']);
+        #set_site_preference('frontendlang',$post['bvalue']);
+        cms_cookies::erase('mle');
+    }
+    
+    public static function setActive($post){
+        $db = cmsms()->GetDb();
+        $query = 'UPDATE  ' . cms_db_prefix() . 'module_mlecms_config set
+		active='.$post["avalue"].',
+                modified_date = NOW()
+		WHERE id = '.$post["aid"];
+        $dbr = $db->Execute($query);
     }
 
     public static function add_to_translations($key, $locale, $value) {

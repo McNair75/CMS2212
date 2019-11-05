@@ -1,59 +1,5 @@
 <?php
 
-#-------------------------------------------------------------------------
-# LISE - List It Special Edition
-# Version 1.2
-# A fork of ListI2
-# maintained by Fernando Morgado AKA Jo Morg
-# since 2015
-#-------------------------------------------------------------------------
-#
-# Original Author: Ben Malen, <ben@conceptfactory.com.au>
-# Co-Maintainer: Simon Radford, <simon@conceptfactory.com.au>
-# Web: www.conceptfactory.com.au
-#
-#-------------------------------------------------------------------------
-#
-# Maintainer since 2011 up to 2014: Jonathan Schmid, <hi@jonathanschmid.de>
-# Web: www.jonathanschmid.de
-#
-#-------------------------------------------------------------------------
-#
-# Some wackos started destroying stuff since 2012 and stopped at 2014:
-#
-# Tapio Löytty, <tapsa@orange-media.fi>
-# Web: www.orange-media.fi
-#
-# Goran Ilic, <uniqu3e@gmail.com>
-# Web: www.ich-mach-das.at
-#
-#-------------------------------------------------------------------------
-#
-# LISE is a CMS Made Simple module that enables the web developer to create
-# multiple lists throughout a site. It can be duplicated and given friendly
-# names for easier client maintenance.
-#
-#-------------------------------------------------------------------------
-# BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# This file is part of LISE
-# LISE program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# LISE program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-# Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
-#
-#-------------------------------------------------------------------------
-# END_LICENSE
-#-------------------------------------------------------------------------
 if (!defined('CMS_VERSION'))
     exit;
 #---------------------
@@ -71,6 +17,10 @@ if (isset($params['module_name'])) {
     $module_name = $params['module_name'];
 }
 
+if (isset($params['domain_id'])) {
+    $domainsection = serialize($params['domain_id']);
+}
+
 $module_friendlyname = $module_name;
 
 if (!empty($params['module_friendlyname'])) {
@@ -84,7 +34,7 @@ $modules = $this->ListModules();
 $admin_sections = array(
     lang('main') => 'main',
     lang('content') => 'content',
-    lang('lise') => 'lise', //+Lee
+    lang('lise') => 'lise',
     lang('layout') => 'layout',
     lang('usersgroups') => 'usersgroups',
     lang('extensions') => 'extensions',
@@ -92,6 +42,13 @@ $admin_sections = array(
     lang('myprefs') => 'myprefs',
     lang('ecommerce') => 'ecommerce'
 );
+
+//$domains = CmsDomainCollection::get_all();
+//if (count($domains) && cms_utils::module_available('MultiDomains')) {
+//    for ($i = 0; $i < count($domains); $i++) {
+//        $domain_sections[$domains[$i]->get_domain()] = $domains[$i]->get_id();
+//    }
+//}
 
 foreach ($modules as $mod) {
     $mod->module_name = substr($mod->module_name, strlen(LISEDuplicator::MOD_PREFIX));
@@ -126,6 +83,7 @@ if (isset($params['submit'])) {
             $mod = cmsms()->GetModuleInstance($module_fullname);
             $mod->SetPreference('friendlyname', $module_friendlyname);
             $mod->SetPreference('adminsection', $params['adminsection']);
+            $mod->SetPreference('domainsection', $domainsection);
             $mod->SetPreference('moddescription', $params['moddescription']);
         }
 
@@ -150,7 +108,8 @@ $smarty->assign('endform', $this->CreateFormEnd());
 $smarty->assign('input_module_name', $this->CreateInputText($id, 'module_name', $module_name, 40));
 $smarty->assign('input_module_friendlyname', $this->CreateInputText($id, 'module_friendlyname', $module_friendlyname, 40));
 $smarty->assign('input_moddescription', $this->CreateTextArea(false, $id, $this->GetPreference('moddescription', $this->ModLang('moddescription')), 'moddescription', 'pagesmalltextarea', '', '', '', '80', '3'));
-$smarty->assign('input_adminsection', $this->CreateInputDropdown($id, 'adminsection', $admin_sections, -1, $this->GetPreference('adminsection', 'content')));
+$smarty->assign('input_adminsection', $this->CreateInputDropdown($id, 'adminsection', $admin_sections, -1, $this->GetPreference('adminsection', 'lise')));
+$smarty->assign('input_domainsection', $this->CreateInputDropdown($id, 'domain_id[]', $domain_sections, -1, -1, 'size=' . (isset($domains) ? count($domains) : 'auto'), true));
 $smarty->assign('autoinstall', $autoinstall);
 
 

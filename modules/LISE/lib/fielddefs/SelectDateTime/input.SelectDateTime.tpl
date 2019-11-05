@@ -24,7 +24,7 @@
 		.datetimepicker({
 			dateFormat: "{$fielddef->GetOptionValue('date_format')}",
 			timeFormat: "{$fielddef->GetOptionValue('time_format')}",
-			{if $fielddef->GetOptionValue('show_seconds')}showSecond: true,{/if}
+                        {if $fielddef->GetOptionValue('show_seconds')}showSecond: true,{/if}
 			hourGrid: 4,
 			minuteGrid: 10,
 			secondGrid: 10

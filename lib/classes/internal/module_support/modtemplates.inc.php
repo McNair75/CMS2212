@@ -1,4 +1,5 @@
 <?php
+
 #CMS - CMS Made Simple
 #(c)2004-2010 by Ted Kulp (ted@cmsmadesimple.org)
 #Visit our homepage at: http://cmsmadesimple.org
@@ -29,20 +30,33 @@
 /**
  * @access private
  */
-function cms_module_ListTemplates(&$modinstance, $modulename = '')
-{
-	$db = CmsApp::get_instance()->GetDb();
-	$retresult = array();
+function cms_module_ListTemplates(&$modinstance, $modulename = '') {
+    $db = CmsApp::get_instance()->GetDb();
+    $retresult = array();
 
-	$query = 'SELECT * from '.CMS_DB_PREFIX.'module_templates WHERE module_name = ? ORDER BY template_name ASC';
-	$result = $db->Execute($query, array($modulename != ''?$modulename:$modinstance->GetName()));
+    $query = 'SELECT * from ' . CMS_DB_PREFIX . 'module_templates WHERE module_name = ? ORDER BY template_name ASC';
+    $result = $db->Execute($query, array($modulename != '' ? $modulename : $modinstance->GetName()));
 
-	while (isset($result) && !$result->EOF) {
-		$retresult[] = $result->fields['template_name'];
-		$result->MoveNext();
-	}
+    while (isset($result) && !$result->EOF) {
+        $retresult[] = $result->fields['template_name'];
+        $result->MoveNext();
+    }
+}
 
-	return $retresult;
+function cms_module_ListAdminTemplates(&$modinstance, $modulename = '') {
+    $db = CmsApp::get_instance()->GetDb();
+    $retresult = array();
+
+    $query = 'SELECT * from ' . CMS_DB_PREFIX . 'module_templates WHERE module_name = ? ORDER BY template_name ASC';
+    $result = $db->Execute($query, array($modulename != '' ? $modulename : $modinstance->GetName()));
+    $i = 0;
+    while (isset($result) && !$result->EOF) {
+        $retresult[$i]['template_name'] = $result->fields['template_name'];
+        $retresult[$i]['content'] = $result->fields['content'];
+        $result->MoveNext();
+        $i++;
+    }
+    return $retresult;
 }
 
 /**
@@ -50,19 +64,18 @@ function cms_module_ListTemplates(&$modinstance, $modulename = '')
  * follow any smarty caching rules.
  * @access private
  */
-function cms_module_GetTemplate(&$modinstance, $tpl_name, $modulename = '')
-{
-	$db = CmsApp::get_instance()->GetDb();
+function cms_module_GetTemplate(&$modinstance, $tpl_name, $modulename = '') {
+    $db = CmsApp::get_instance()->GetDb();
 
-	$query = 'SELECT * from '.CMS_DB_PREFIX.'module_templates WHERE module_name = ? and template_name = ?';
-	$result = $db->Execute($query, array($modulename != ''?$modulename:$modinstance->GetName(), $tpl_name));
+    $query = 'SELECT * from ' . CMS_DB_PREFIX . 'module_templates WHERE module_name = ? and template_name = ?';
+    $result = $db->Execute($query, array($modulename != '' ? $modulename : $modinstance->GetName(), $tpl_name));
 
-	if ($result && $result->RecordCount() > 0) {
-		$row = $result->FetchRow();
-		return $row['content'];
-	}
+    if ($result && $result->RecordCount() > 0) {
+        $row = $result->FetchRow();
+        return $row['content'];
+    }
 
-	return '';
+    return '';
 }
 
 /**
@@ -70,79 +83,77 @@ function cms_module_GetTemplate(&$modinstance, $tpl_name, $modulename = '')
  * Code adapted from the Guestbook module
  * @access private
  */
-function cms_module_GetTemplateFromFile(&$modinstance, $template_name)
-{
-	$ok = (strpos($template_name, '..') === false);
-	if (!$ok) return;
+function cms_module_GetTemplateFromFile(&$modinstance, $template_name) {
+    $ok = (strpos($template_name, '..') === false);
+    if (!$ok)
+        return;
 
-	$tpl_base  = CMS_ROOT_PATH.DIRECTORY_SEPARATOR.'modules'.DIRECTORY_SEPARATOR;
-	$tpl_base .= $modinstance->GetName().DIRECTORY_SEPARATOR.'templates';
-	$template = $tpl_base.DIRECTORY_SEPARATOR.$template_name;
-	if( !endswith($template,'.tpl') ) $template .= '.tpl';
-	if (is_file($template)) {
-		return file_get_contents($template);
-	}
-	else {
-		return null;
-	}
+    $tpl_base = CMS_ROOT_PATH . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR;
+    $tpl_base .= $modinstance->GetName() . DIRECTORY_SEPARATOR . 'templates';
+    $template = $tpl_base . DIRECTORY_SEPARATOR . $template_name;
+    if (!endswith($template, '.tpl'))
+        $template .= '.tpl';
+    if (is_file($template)) {
+        return file_get_contents($template);
+    } else {
+        return null;
+    }
 }
 
 /**
  * @access private
  */
-function cms_module_SetTemplate(&$modinstance, $tpl_name, $content, $modulename = '')
-{
-	$db = CmsApp::get_instance()->GetDb();
+function cms_module_SetTemplate(&$modinstance, $tpl_name, $content, $modulename = '') {
+    $db = CmsApp::get_instance()->GetDb();
 
-	$query = 'SELECT module_name FROM '.CMS_DB_PREFIX.'module_templates WHERE module_name = ? and template_name = ?';
-	$result = $db->Execute($query, array($modulename != ''?$modulename:$modinstance->GetName(), $tpl_name));
+    $query = 'SELECT module_name FROM ' . CMS_DB_PREFIX . 'module_templates WHERE module_name = ? and template_name = ?';
+    $result = $db->Execute($query, array($modulename != '' ? $modulename : $modinstance->GetName(), $tpl_name));
 
-	$time = $db->DBTimeStamp(time());
-	if ($result && $result->RecordCount() < 1) {
-		$query = 'INSERT INTO '.CMS_DB_PREFIX.'module_templates (module_name, template_name, content, create_date, modified_date) VALUES (?,?,?,'.$time.','.$time.')';
-		$db->Execute($query, array($modulename != ''?$modulename:$modinstance->GetName(), $tpl_name, $content));
-	}
-	else {
-		$query = 'UPDATE '.CMS_DB_PREFIX.'module_templates SET content = ?, modified_date = '.$time.' WHERE module_name = ? AND template_name = ?';
-		$db->Execute($query, array($content, $modulename != ''?$modulename:$modinstance->GetName(), $tpl_name));
-	}
+    $time = $db->DBTimeStamp(time());
+    if ($result && $result->RecordCount() < 1) {
+        $query = 'INSERT INTO ' . CMS_DB_PREFIX . 'module_templates (module_name, template_name, content, create_date, modified_date) VALUES (?,?,?,' . $time . ',' . $time . ')';
+        $db->Execute($query, array($modulename != '' ? $modulename : $modinstance->GetName(), $tpl_name, $content));
+    } else {
+        $query = 'UPDATE ' . CMS_DB_PREFIX . 'module_templates SET content = ?, modified_date = ' . $time . ' WHERE module_name = ? AND template_name = ?';
+        $db->Execute($query, array($content, $modulename != '' ? $modulename : $modinstance->GetName(), $tpl_name));
+    }
 }
 
 /**
  * @access private
  */
-function cms_module_DeleteTemplate(&$modinstance, $tpl_name = '', $modulename = '')
-{
-	$db = CmsApp::get_instance()->GetDb();
+function cms_module_DeleteTemplate(&$modinstance, $tpl_name = '', $modulename = '') {
+    $db = CmsApp::get_instance()->GetDb();
 
-	$parms = array($modulename != ''?$modulename:$modinstance->GetName());
-	$query = "DELETE FROM ".CMS_DB_PREFIX."module_templates WHERE module_name = ?";
-	if( $tpl_name != '' ) {
-		$query .= 'AND template_name = ?';
-	    $parms[] = $tpl_name;
-	}
-	$result = $db->Execute($query, $parms);
-	return ($result == false)?false:true;
+    $parms = array($modulename != '' ? $modulename : $modinstance->GetName());
+    $query = "DELETE FROM " . CMS_DB_PREFIX . "module_templates WHERE module_name = ?";
+    if ($tpl_name != '') {
+        $query .= 'AND template_name = ?';
+        $parms[] = $tpl_name;
+    }
+    $result = $db->Execute($query, $parms);
+    return ($result == false) ? false : true;
 }
 
 /**
  * @access private
  */
-function cms_module_ProcessTemplate(&$modinstance, $tpl_name, $designation = '', $cache = false, $cacheid = '')
-{
-	$ok = (strpos($tpl_name, '..') === false);
-	if (!$ok) return;
+function cms_module_ProcessTemplate(&$modinstance, $tpl_name, $designation = '', $cache = false, $cacheid = '') {
+    $ok = (strpos($tpl_name, '..') === false);
+    if (!$ok)
+        return;
 
     $smarty = $modinstance->GetActionTemplateObject();
-    if( !$smarty ) $smarty = Smarty_CMS::get_instance();
-	$oldcache = $smarty->caching;
-	if( $smarty->caching != Smarty::CACHING_OFF ) {
-		$smarty->caching = ($modinstance->can_cache_output())?Smarty::CACHING_LIFETIME_CURRENT:Smarty::CACHING_OFF;
-	}
-	$result = $smarty->fetch('module_file_tpl:'.$modinstance->GetName().';'.$tpl_name, $cacheid, ($designation != ''?$designation:$modinstance->GetName()));
-	$smarty->caching = $oldcache;
+    if (!$smarty)
+        $smarty = Smarty_CMS::get_instance();
+    $oldcache = $smarty->caching;
+    if ($smarty->caching != Smarty::CACHING_OFF) {
+        $smarty->caching = ($modinstance->can_cache_output()) ? Smarty::CACHING_LIFETIME_CURRENT : Smarty::CACHING_OFF;
+    }
+    $result = $smarty->fetch('module_file_tpl:' . $modinstance->GetName() . ';' . $tpl_name, $cacheid, ($designation != '' ? $designation : $modinstance->GetName()));
+    $smarty->caching = $oldcache;
 
-	return $result;
+    return $result;
 }
 
 /**
@@ -150,28 +161,29 @@ function cms_module_ProcessTemplate(&$modinstance, $tpl_name, $designation = '',
  * note, there is no caching involved.
  * @access private
  */
-function cms_module_ProcessTemplateFromData(&$modinstance, $data)
-{
+function cms_module_ProcessTemplateFromData(&$modinstance, $data) {
     $smarty = $modinstance->GetActionTemplateObject();
-    if( !$smarty ) $smarty = Smarty_CMS::get_instance();
-    $_contents = $smarty->fetch('string:'.$data);
+    if (!$smarty)
+        $smarty = Smarty_CMS::get_instance();
+    $_contents = $smarty->fetch('string:' . $data);
     return $_contents;
 }
 
 /**
  * @access private
  */
-function cms_module_ProcessTemplateFromDatabase(&$modinstance, $tpl_name, $designation = '', $cache = false, $modulename = '')
-{
+function cms_module_ProcessTemplateFromDatabase(&$modinstance, $tpl_name, $designation = '', $cache = false, $modulename = '') {
     $smarty = $modinstance->GetActionTemplateObject();
-    if( !$smarty ) $smarty = Smarty_CMS::get_instance();
-    if( $modulename == '' ) $modulename = $modinstance->GetName();
+    if (!$smarty)
+        $smarty = Smarty_CMS::get_instance();
+    if ($modulename == '')
+        $modulename = $modinstance->GetName();
 
     $oldcache = $smarty->caching;
-    if( $smarty->caching != Smarty::CACHING_OFF ) {
-        $smarty->caching = ($modinstance->can_cache_output())?Smarty::CACHING_LIFETIME_CURRENT:Smarty::CACHING_OFF;
+    if ($smarty->caching != Smarty::CACHING_OFF) {
+        $smarty->caching = ($modinstance->can_cache_output()) ? Smarty::CACHING_LIFETIME_CURRENT : Smarty::CACHING_OFF;
     }
-    $result = $smarty->fetch('module_db_tpl:'.$modulename.';'.$tpl_name, '', ($designation != ''?$designation:$modulename));
+    $result = $smarty->fetch('module_db_tpl:' . $modulename . ';' . $tpl_name, '', ($designation != '' ? $designation : $modulename));
     $smarty->caching = $oldcache;
 
     return $result;

@@ -1,6 +1,6 @@
 <?php
 
-$lang['friendlyname'] = 'Languages & translations';
+$lang['friendlyname'] = 'Languages & Translations';
 $lang['postinstall'] = 'Mle CMS was successful installed';
 $lang['postuninstall'] = 'Mle CMS was successful uninstalled';
 $lang['really_uninstall'] = 'Really? Are you sure
@@ -10,6 +10,11 @@ $lang['installed'] = 'Module version %s installed.';
 $lang['upgraded'] = 'Module upgraded to version %s.';
 $lang['moddescription'] = 'This module add multilanguage solutions to you CMS Made Simple';
 $lang['info_success'] = 'Succes';
+$lang['viewfilter'] = 'Filter';
+$lang['alert_reset'] = 'Reset Data';
+$lang['alert_sync'] = 'Sync Data';
+$lang['nothing'] = 'Nothing.';
+
 $lang['optionsupdated'] = 'Options updated';
 $lang['module_missing'] = 'Please, instal module %s';
 
@@ -18,10 +23,12 @@ $land['admin_title'] = 'Admin Panel';
 $lang['admindescription'] = '';
 $lang['accessdenied'] = 'Access Denied. Please check your permissions.';
 $lang['postinstall'] = 'Post Install Message, (e.g., Be sure to set "manage mle_cms" permissions to use this module!)';
-$lang['or'] = 'or';
 
 // Mle config
 $lang['mle_config'] = 'Languages';
+$lang['sync'] = 'Sync Data';
+$lang['default'] = 'Default';
+$lang['active'] = 'Active';
 $lang['idtext'] = 'ID';
 $lang['alias'] = 'Root alias';
 $lang['name'] = 'Name';
@@ -37,17 +44,30 @@ $lang['mle_init'] = 'Multilanguage detection';
 $lang['default_root_base'] = 'Default (based on root alias identification)';
 
 // Snippets
+
 $lang['manage_snippets'] = 'Snippets';
 $lang['unknown'] = 'Error: Unknown';
 $lang['delete'] = 'Delete';
 $lang['areyousure'] = 'Are you sure ?';
+$lang['areyousure_setdefaultmle'] = 'Are you sure set default language for FrontEnd ?';
+$lang['areyousure_reset'] = 'Are you sure Reset to original Field?';
 $lang['edit'] = 'Edit';
 $lang['add'] = 'Add';
 $lang['source'] = 'Source';
 $lang['submit'] = 'Submit';
+$lang['title_filter'] = 'Filter';
 $lang['cancel'] = 'Cancel';
+$lang['reset'] = 'Reset';
 $lang['apply'] = 'Apply';
 $lang['tag'] = 'Tag';
+$lang['content'] = 'Content';
+
+$lang['prompt_page'] = 'Page';
+$lang['prompt_page_default'] = 'Default';
+$lang['prompt_page_enablelanguage'] = 'Enable Language';
+$lang['prompt_page_disablelanguage'] = 'Disable Language';
+$lang['prompt_pagelimit'] = 'Page Limit';
+$lang['prompt_translate'] = 'Translate';
 
 // Blocks
 $lang['manage_blocks'] = 'Blocks';
@@ -116,4 +136,3 @@ $lang['help'] = '
 <h3>Do you like my work? </h3>
 <p><a href="http://cmsmadesimple.sk/donate-card/?utm_source=cmsmadesimple&utm_medium=link&utm_campaign=help" target="_blank">Give me five or feel free to donate me</a></p>    
 ';
-?>

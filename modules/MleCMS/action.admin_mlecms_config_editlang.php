@@ -48,6 +48,14 @@ if (isset($params['compid'])) {
     $compid = (int) $params['compid'];
 }
 
+
+$default = get_site_preference('default_lang_mle');
+$query = 'SELECT * FROM ' . cms_db_prefix() . 'module_mlecms_config WHERE locale = ?';
+$row = $db->GetRow($query, array($default));
+if($row["id"] && $row["id"] == $compid){
+    $this->RedirectToTab($id, "mle_config");
+}
+
 $name = '';
 if (isset($params['name'])) {
     $name = $params['name'];
@@ -72,8 +80,6 @@ $locale = CmsNlsOperations::get_default_language();
 if (isset($params['locale'])) {
     $locale = $params['locale'];
 }
-
-$setlocale = '';
 
 $flag = '';
 
@@ -105,21 +111,48 @@ if (isset($params['submit'])) {
         @unlink($srcname);
         $flag = '';
     }
-
-
+    
+    
 
     if ($compid == "") {
         // insert the order record
         $sort = $db->GetOne('SELECT MAX(sort) FROM ' . cms_db_prefix() . 'module_mlecms_config');
         $query = 'INSERT INTO ' . cms_db_prefix() . 'module_mlecms_config
-		(name,alias,extra,canonical, locale,setlocale,direction,flag,sort,created_date,modified_date)
-		VALUES (?,?,?,?,?,?,?,?,?,NOW(),NOW())';
-        $dbr = $db->Execute($query, array($name, $alias, $extra, $canonical, $locale, $setlocale, $direction, $flag, ($sort + 1)));
+		(name,alias,extra,canonical, locale,setlocale,direction,flag,sort,active,created_date,modified_date)
+		VALUES (?,?,?,?,?,?,?,?,?,?,NOW(),NOW())';
+        $active = 1;
+        $dbr = $db->Execute($query, array($name, $alias, $extra, $canonical, $locale, $setlocale, $direction, $flag, ($sort + 1), $active));
         $cid = $db->Insert_ID();
         if (!$cid) {
             echo $this->ShowErrors($this->Lang('nonamegiven'));
+        } else {
+            #Lipit: Alter table add _en to:
+            #CMSContentManager Modules
+            
+            /*
+            $tablename = cms_db_prefix() . 'content';
+            if (!cms_utils::db_column_exists($tablename, 'content_name_' . $alias)) {
+                $q = 'ALTER TABLE ' . $tablename . ' ADD content_name_' . $alias . ' VARCHAR(250) AFTER content_name';
+                $r = $db->Execute($q);
+                if (!$r)
+                    throw new Exception($db->ErrorMsg());
+            }
+            if (!cms_utils::db_column_exists($tablename, 'menu_text_' . $alias)) {
+                $q = 'ALTER TABLE ' . $tablename . ' ADD menu_text_' . $alias . ' VARCHAR(250) AFTER menu_text';
+                $r = $db->Execute($q);
+                if (!$r)
+                    throw new Exception($db->ErrorMsg());
+            }
+            if (!cms_utils::db_column_exists($tablename, 'titleattribute_' . $alias)) {
+                $q = 'ALTER TABLE ' . $tablename . ' ADD titleattribute_' . $alias . ' VARCHAR(250) AFTER metadata';
+                $r = $db->Execute($q);
+                if (!$r)
+                    throw new Exception($db->ErrorMsg());
+            }
+            */
         }
     } else {
+        
         $query = 'UPDATE  ' . cms_db_prefix() . 'module_mlecms_config set
 		name=?,
                 alias = ?,

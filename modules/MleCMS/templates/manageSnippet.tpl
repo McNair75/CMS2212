@@ -9,18 +9,18 @@
     <legend>{$title_source}</legend>
     <div class="pageoverflow">
         <div class="pageinput">
-            {$mod->StartTabHeaders()}
-            {foreach from=$langs item=lang}
-                {$mod->SetTabHeader($lang.alias, $lang.name)}
-            {/foreach}
-            {$mod->EndTabHeaders()}
-            {$mod->StartTabContent()}
-            {foreach from=$langs item=lang}
-                {$mod->StartTab($lang.alias)}
-                {$lang.textarea}
-                {$mod->EndTab()}
-            {/foreach}
-            {$mod->EndTabHeaders()}
+{$mod->StartTabHeaders()}
+{foreach from=$langs item=lang}
+{$mod->SetTabHeader($lang.alias, $lang.name)}
+{/foreach}
+{$mod->EndTabHeaders()}
+{$mod->StartTabContent()}
+{foreach from=$langs item=lang}
+{$mod->StartTab($lang.alias)}
+{$lang.textarea}
+{$mod->EndTab()}
+{/foreach}
+{$mod->EndTabHeaders()}
         </div>
     </div>
 </fieldset>

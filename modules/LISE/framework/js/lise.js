@@ -9,26 +9,28 @@ function updateRows() {
 }
 
 function initTableSorter() {
-    
+
     $('table').footable().bind({
-        'footable_sorted' : function() {
+        'footable_sorted': function() {
             updateRows();
         },
-        'footable_filtered' : function() {
+        'footable_filtered': function() {
             updateRows();
         },
-        'footable_row_expanded' : function() {
+        'footable_row_expanded': function() {
             initAjax();
             initAjaxEvents();
-            
+
             $('.footable-row-detail-name:empty').hide();
         }
     });
 }
 
 function initDatepicker() {
-    $('#m1_start_time, #m1_end_time').datepicker({
-        dateFormat : 'yy-mm-dd'
+    $('#m1_start_time, #m1_end_time').datetimepicker({
+        dateFormat: 'yy-mm-dd',
+        timeFormat: 'hh:mm:ss',
+        showSecond: true
     });
 }
 
@@ -90,8 +92,8 @@ function initSortable() {
 
     //run sortable function
     $("#sortable_item tbody.content, #sortable_fielddef tbody.content").sortable({
-        helper : fixHelper,
-        update : function(event, ui) {
+        helper: fixHelper,
+        update: function(event, ui) {
             $("#sortable_item, #sortable_fielddef").find("tbody.content tr:odd").attr('class', "row2");
             $("#sortable_item, #sortable_fielddef").find("tbody.content tr:even").attr('class', "row1");
         }
@@ -100,57 +102,84 @@ function initSortable() {
 }
 
 function initSelectAll() {
-    $('#check_all_item, #check_all_category, #check_all_fielddef').click(function() {
 
-        $(this).closest('table').find("tbody tr").each(function() {
+    $('#check_all_item').cmsms_checkall();
+    $('#check_all_category').cmsms_checkall();
+    $('#lise_item_mass_action, #m1_submit_itemorder').attr('disabled', 'disabled');
+    $('#m1_submit_itemorder').button({ 'disabled': true });
 
-            $checkbox = $(this).find(':checkbox');
-            $checkbox.prop('checked', !$checkbox[0].checked);
-        });
+    $('#lise_category_mass_action').attr('disabled', 'disabled');
+
+    //+Lee: Tab Items
+    $('#check_all_item, #check_all_fielddef, .cms_checkbox').click(function() {
+        //        $(this).closest('table').find("tbody tr").each(function () {
+        //            $checkbox = $(this).find(':checkbox');
+        //            $checkbox.prop('checked', !$checkbox[0].checked);
+        //        });
+
+        if (!$('#check_all_item').closest('table').find('.cms_checkbox').is(':checked')) {
+            var ltb = $(this).closest('table').find('.cms_checkbox:checked');
+            if (ltb.length < 1) {
+                $('#lise_item_mass_action').attr('disabled', 'disabled');
+                $('#m1_submit_itemorder').attr('disabled', 'disabled');
+                $('#m1_submit_itemorder').button({ 'disabled': true });
+            }
+        } else {
+            $('#lise_item_mass_action').removeAttr('disabled');
+            $('#m1_submit_itemorder').removeAttr('disabled');
+            $('#m1_submit_itemorder').button({ 'disabled': false });
+        }
     });
+
+    //+Lee: Tab Categories
+    $('#check_all_category, #check_all_fielddef, .cms_checkbox').click(function() {
+        if (!$('#check_all_category').closest('table').find('.cms_checkbox').is(':checked')) {
+            var ltb = $(this).closest('table').find('.cms_checkbox:checked');
+            if (ltb.length < 1) {
+                $('#lise_category_mass_action').attr('disabled', 'disabled');
+            }
+        } else {
+            $('#lise_category_mass_action').removeAttr('disabled');
+        }
+    });
+
 }
 /** deprecated **/
 /*
-function initSlug() {
-
-    if ($('#m1_alias').val() == '') {
-        $('#m1_alias').addClass('slug');
-        // slug alias
-        $("#m1_title").slug({
-            slug : 'slug', // class of input / span that contains the generated slug
-            hide : false, // hide the text input, true by default
-            prefix : 'item-'
-        });
-    }
-}
-*/
+ function initSlug() {
+ 
+ if ($('#m1_alias').val() == '') {
+ $('#m1_alias').addClass('slug');
+ // slug alias
+ $("#m1_title").slug({
+ slug : 'slug', // class of input / span that contains the generated slug
+ hide : false, // hide the text input, true by default
+ prefix : 'item-'
+ });
+ }
+ }
+ */
 
 function initQuickSearch() {
-    
-    $('table#sortable_item').trigger('footable_filter',
-        {
-            filter: $('input#item_search').val()
-        }
-    );
-    
+    $('table#sortable_item').trigger('footable_filter', {
+        filter: $('input#item_search').val()
+    });
     $('#quicksearch_form').submit(function(event) {
         event.preventDefault();
     });
 }
 
 function initColorBox() {
-
-    if (( $('.cbox').length !== 0 ) && ( typeof $.colorbox === 'function' )) {
+    if (($('.cbox').length !== 0) && (typeof $.colorbox === 'function')) {
         $('.cbox').colorbox({
-            scalePhotos : true,
-            maxWidth : 800,
-            maxHeight : 600,
-            rel : 'group',
-            opacity : 0.2
+            scalePhotos: true,
+            maxWidth: 800,
+            maxHeight: 600,
+            rel: 'group',
+            opacity: 0.2
         });
     }
 }
-
 
 /************************************************************
  $ INIT (Run initial stuff here)
@@ -164,14 +193,15 @@ $(function($) {
             c.hide();
         }, 9000);
     });
-    
+
     $('table#sortable_item').footable();
 
     initSortable();
     initSelectAll();
     initDatepicker();
     initTableSorter();
-    /*initSlug();       */ /** deprecated **/
+    /*initSlug();       */
+    /** deprecated **/
     initQuickSearch();
     initColorBox();
 });
@@ -188,10 +218,10 @@ $(function($) {
 function ajax_function(usr_function, params) {
 
     return $.post(CMS_ADMIN_DIR + "/moduleinterface.php" + CMS_USER_KEY, {
-        mact : MODULE_NAME + ',m1_,ajax,0',
-        m1_usr_function : usr_function,
-        showtemplate : false,
-        m1_params : params
+        mact: MODULE_NAME + ',m1_,ajax,0',
+        m1_usr_function: usr_function,
+        showtemplate: false,
+        m1_params: params
     });
 }
 
@@ -209,24 +239,24 @@ $(function($) {
         var selector2 = '.template_input > textarea';
 
         $.ajax({
-            type : "POST",
-            url : url,
-            async : true,
-            dataType : "html",
-            data : params,
-            beforeSend : function() {
+            type: "POST",
+            url: url,
+            async: true,
+            dataType: "html",
+            data: params,
+            beforeSend: function() {
                 $(selector2).empty();
-                $(selector).empty().append('<div class="pageoverflow"><div class="pageinput"><div class="ajax-loading ajax-loader-type-wide"></div></div></div>');           
+                $(selector).empty().append('<div class="pageoverflow"><div class="pageinput"><div class="ajax-loading ajax-loader-type-wide"></div></div></div>');
             },
-            error : function(jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 alert("Sorry. There was a LISE AJAX error: " + textStatus);
             },
-            success : function(data) {
+            success: function(data) {
                 var my_data = $(selector, data).html();
                 $(selector).html(my_data);
-                
-                var my_data2 =  $("<div/>").html($(selector2, data).html()).text();
-                $(selector2).val(my_data2);   
+
+                var my_data2 = $("<div/>").html($(selector2, data).html()).text();
+                $(selector2).val(my_data2);
             }
         });
     });
@@ -240,7 +270,7 @@ $(function($) {
 
             var items = $(".item-mass-action :input").serializeArray();
 
-            switch($(this).val()) {
+            switch ($(this).val()) {
                 case 'delete':
 
                     $.each(items, function(i, field) {
@@ -271,7 +301,7 @@ $(function($) {
 
             var items = $(".category-mass-action :input").serializeArray();
 
-            switch($(this).val()) {
+            switch ($(this).val()) {
                 case 'delete':
 
                     $.each(items, function(i, field) {
@@ -301,7 +331,7 @@ $(function($) {
 
             var items = $(".fielddef-mass-action :input").serializeArray();
 
-            switch($(this).val()) {
+            switch ($(this).val()) {
                 case 'delete':
 
                     $.each(items, function(i, field) {
@@ -321,4 +351,4 @@ $(function($) {
         $(this).val(0);
 
     });
-}); 
+});

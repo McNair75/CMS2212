@@ -48,11 +48,7 @@ $smarty->assign('mle_search_restriction', $this->CreateInputYesNoDropdown($id, '
 ##$smarty->assign('mle_template', $this->CreateTextArea(false,$id, $this->GetTemplate('mle_template'), 'mle_template'));
 
 $mle_init = module_helper::get_modules_with_method('GetMleInit');
-if (is_array($mle_init)) {
-    $mle_init = cge_array::hash_prepend($mle_init, '__DEFAULT__', $this->Lang('default_root_base'));
-} else {
-    $mle_init['__DEFAULT__'] = $this->Lang('default_root_base');
-}
+// $mle_init = cge_array::hash_prepend($mle_init, '__DEFAULT__', $this->Lang('default_root_base'));
 $smarty->assign('mle_init', $mle_init);
 $smarty->assign('mle_init_module', $this->GetPreference('mle_init', '__DEFAULT__'));
 
@@ -60,4 +56,3 @@ $smarty->assign('mle_init_module', $this->GetPreference('mle_init', '__DEFAULT__
 
 // Display the populated template
 echo $this->ProcessTemplate('adminprefs.tpl');
-?>
